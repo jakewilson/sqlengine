@@ -3,6 +3,8 @@
  */
 public interface CatalogInterface {
 
+    public static final String PATH = "Catalog";
+
     /**
      * Creates a new database
      * @param name the name of the new database

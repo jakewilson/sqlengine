@@ -9,7 +9,7 @@ public interface DatabaseInterface {
      * @param def the field definitions
      * @return whether the creation was successful
      */
-    public boolean createTable(String name, FieldDefinition def);
+    public boolean createTable(String name, Column def);
 
     /**
      * Removes the specified table from the database

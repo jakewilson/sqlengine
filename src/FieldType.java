@@ -1,3 +1,5 @@
+import java.io.Serializable;
+
 /**
  * FieldType
  *
@@ -10,7 +12,7 @@
  *
  * Created by jakewilson on 11/15/15.
  */
-public class FieldType {
+public class FieldType implements Serializable {
     private Type type;
     private int precision;
     private int scale;
@@ -29,6 +31,30 @@ public class FieldType {
         this.type = type;
         this.precision = precision;
         this.scale = scale;
+    }
+
+    /**
+     * Returns the type
+     * @return the type
+     */
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * Returns the precision
+     * @return the precision
+     */
+    public int getPrecision() {
+        return precision;
+    }
+
+    /**
+     * Returns the scale
+     * @return the scale
+     */
+    public int getScale() {
+        return scale;
     }
 }
 

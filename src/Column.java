@@ -1,6 +1,7 @@
+import java.io.Serializable;
 
 /**
- * FieldDefinition.java
+ * Column.java
  *
  * Class for cleanly storing the field definitions from the statement
  *
@@ -8,8 +9,8 @@
  *
  * Created by jakewilson on 11/15/15.
  */
-public class FieldDefinition {
-    private FieldDefinition next;
+public class Column implements Serializable {
+    private Column next;
 
     private String name;
     private FieldType type;
@@ -17,7 +18,7 @@ public class FieldDefinition {
     private boolean notNull;
     private boolean primaryKey; // is this needed?
 
-    public FieldDefinition(String name, FieldType type, boolean notNull) {
+    public Column(String name, FieldType type, boolean notNull) {
         this.name = name;
         this.type = type;
         this.notNull = notNull;
@@ -28,7 +29,7 @@ public class FieldDefinition {
      * Sets the next field definition
      * @param next the next field definition
      */
-    public void setNext(FieldDefinition next) {
+    public void setNext(Column next) {
         this.next = next;
     }
 
@@ -36,7 +37,7 @@ public class FieldDefinition {
      * Returns the next field definition
      * @return the next field definition
      */
-    public FieldDefinition getNext() {
+    public Column getNext() {
         return next;
     }
 
@@ -44,7 +45,7 @@ public class FieldDefinition {
      * Returns the name
      * @return the name
      */
-    private String getName() {
+    public String getName() {
         return name;
     }
 
@@ -52,7 +53,7 @@ public class FieldDefinition {
      * Returns the field type
      * @return the field type
      */
-    private FieldType getType() {
+    public FieldType getType() {
         return type;
     }
 
@@ -60,7 +61,7 @@ public class FieldDefinition {
      * Returns whether this field definition is not null
      * @return whether this field definition is not null
      */
-    private boolean isNotNull() {
+    public boolean isNotNull() {
         return notNull;
     }
 }
