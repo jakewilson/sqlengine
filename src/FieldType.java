@@ -1,4 +1,13 @@
 /**
+ * FieldType
+ *
+ * Class for cleanly storing field types from the statement
+ *
+ * field-type -> integer[(n)] |
+ *               number[(w[,d])] |
+ *               character[(n)] |
+ *               date
+ *
  * Created by jakewilson on 11/15/15.
  */
 public class FieldType {
@@ -25,6 +34,8 @@ public class FieldType {
 
 /**
  * Attribute types
+ * Just bare types without any modifiers - FieldType stores
+ * the precision and scale
  */
 enum Type {
     INTEGER,

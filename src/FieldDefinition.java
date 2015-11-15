@@ -1,6 +1,11 @@
-import java.lang.reflect.Field;
 
 /**
+ * FieldDefinition.java
+ *
+ * Class for cleanly storing the field definitions from the statement
+ *
+ * CREATE TABLE table-name (field-def [,field-def] ... );
+ *
  * Created by jakewilson on 11/15/15.
  */
 public class FieldDefinition {
