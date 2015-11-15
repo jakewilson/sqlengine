@@ -12,8 +12,8 @@ public interface CatalogInterface {
 
     /**
      * Removes a database from the catalog
-     * @param name the name of the database to delete
-     * @return whether the deletion was successful
+     * @param name the name of the database to remove
+     * @return whether the removal was successful
      */
     public boolean dropDatabase(String name);
 
@@ -26,7 +26,7 @@ public interface CatalogInterface {
     public boolean loadDatabase(String name);
 
     /**
-     * Writes the current database to disk
+     * Saves the current database
      * @return whether the operation was successful
      */
     public boolean saveDatabase();
