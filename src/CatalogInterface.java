@@ -26,10 +26,9 @@ public interface CatalogInterface {
     public boolean loadDatabase(String name);
 
     /**
-     * Writes a database to disk
-     * @param name the name of the database to save
+     * Writes the current database to disk
      * @return whether the operation was successful
      */
-    public boolean saveDatabase(String name);
+    public boolean saveDatabase();
 
 }
