@@ -53,7 +53,7 @@ public class Column implements Serializable {
      * Returns the field type
      * @return the field type
      */
-    public FieldType getType() {
+    public FieldType getFieldType() {
         return type;
     }
 

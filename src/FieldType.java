@@ -13,6 +13,7 @@ import java.io.Serializable;
  * Created by jakewilson on 11/15/15.
  */
 public class FieldType implements Serializable {
+
     private Type type;
     private int precision;
     private int scale;

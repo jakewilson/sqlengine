@@ -18,10 +18,4 @@ public interface DatabaseInterface {
      */
     public boolean dropTable(String name);
 
-    /**
-     * Saves each table in the database
-     * @return whether the saves were successful
-     */
-    public boolean save();
-
 }
