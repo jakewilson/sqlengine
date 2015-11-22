@@ -4,29 +4,17 @@
 public class DDLCommand extends Command {
 
     /** To be used only for CREATE_TABLE command */
-    private Column column;
-    private String name;
 
     public DDLCommand(CommandType type, String name, Column column) {
-        super(type);
-        this.name = name;
-        this.column = column;
+        super(type, name, column);
     }
 
     public DDLCommand(CommandType type, String name) {
-        this(type, name, null);
+        super(type, name, null);
     }
 
     public DDLCommand(CommandType type) {
-        this(type, null);
-    }
-
-    /**
-     * Returns the name that is the object of the command
-     * @return the name that is the object of the command
-     */
-    public String getName() {
-        return name;
+        super(type, null);
     }
 
     /**

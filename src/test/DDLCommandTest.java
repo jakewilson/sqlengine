@@ -6,9 +6,9 @@ import static org.junit.Assert.*;
 public class DDLCommandTest {
 
     @org.junit.Test
-    public void testGetName() throws Exception {
+    public void testGetSubject() throws Exception {
         DDLCommand ddl = new DDLCommand(CommandType.CREATE_TABLE, "name");
-        assertEquals("name", ddl.getName());
+        assertEquals("name", ddl.getSubject());
     }
 
     @Test

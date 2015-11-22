@@ -31,7 +31,7 @@ public class Catalog
    {
       if (!databaseNames.containsKey(name))
       {
-         this.databaseNames.put(name, new Database());
+         this.databaseNames.put(name, new Database(name));
          return true;   
       }
       else
