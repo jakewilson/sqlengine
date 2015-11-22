@@ -88,7 +88,9 @@ public class Catalog
    
    
    /**
-   Saves the current database to the programs directory/catalog/"database name".ser   
+   Saves the current database to the programs directory/catalog/"database name".ser
+   
+   @return boolean
    **/
    public boolean saveDatabase()
    {
