@@ -8,8 +8,21 @@ public abstract class Command {
 
     private CommandType type;
 
-    public Command(CommandType type) {
+    protected Column column;
+    private String subject;
+
+    public Command(CommandType type, String subject, Column column) {
         this.type = type;
+        this.subject = subject;
+        this.column = column;
+    }
+
+    public Command(CommandType type, String subject) {
+        this(type, subject, null);
+    }
+
+    public Command(CommandType type) {
+        this(type, null);
     }
 
     /**
@@ -19,6 +32,17 @@ public abstract class Command {
     public CommandType getType() {
         return type;
     }
+
+    /**
+     * Returns the subject that is the object of the command
+     * @return the subject that is the object of the command
+     */
+    public String getSubject() {
+        return subject;
+    }
+
+    public abstract Column getColumn();
+
 }
 
 enum CommandType {

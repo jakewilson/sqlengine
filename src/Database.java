@@ -1,7 +1,7 @@
 import java.util.Hashtable;
 import java.io.Serializable;
 
-public class Database implements DatabaseInterface, Serializable
+public class Database implements Serializable
 {
 	private String name;
 	private Hashtable<String, Table> database;
