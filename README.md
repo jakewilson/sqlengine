@@ -15,3 +15,7 @@ Now, commit:
 
 Push this commit to your remote repository on github, and submit a pull request at
 [github.com/jakewilson/sqlengine](github.com/jakewilson/sqlengine).
+
+Lastly, **please make sure your code compiles before making a pull request**.
+
+Thank you!
