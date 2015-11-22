@@ -1,4 +1,7 @@
 /**
+ * This class and its subclasses will be used to easily
+ * store commands and execute them
+ *
  * Created by jakewilson on 11/21/15.
  */
 public abstract class Command {

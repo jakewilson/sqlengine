@@ -111,5 +111,7 @@ public class Catalog
       {
           System.out.println("Failed to save");
       }
+
+      return true;
    }
 }

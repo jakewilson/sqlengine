@@ -33,7 +33,7 @@ public class DDLCommand extends Command {
      * Returns the column of the table or null if the commandtype != CREATE_TABLE
      * @return the column of the table or null if the commandtype != CREATE_TABLE
      */
-    public Column column() {
+    public Column getColumn() {
         if (getType() == CommandType.CREATE_TABLE)
             return column;
 
