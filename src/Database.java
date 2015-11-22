@@ -1,14 +1,15 @@
 import java.util.Hashtable;
+import java.io.Serializable;
 
-public class Database implements DatabaseInterface
+public class Database implements DatabaseInterface, Serializable
 {
-	private String DBname;
+	private String name;
 	private Hashtable<String, Table> database;
 	
-	public Database(String DBname)
+	public Database(String name)
 	{
-      this.DBname=DBname;
-      database = new Hashtable<String, Database>();
+      this.name=name;
+      database = new Hashtable<String, Table>();
 
 	}
   
@@ -54,3 +55,4 @@ public class Database implements DatabaseInterface
  }  
    	
 }
+
