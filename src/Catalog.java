@@ -19,7 +19,7 @@ public class Catalog
    /**
    Filepath Constructor
    
-   @param String with filepath for load/save operations
+   @param   fp String with filepath for load/save operations
    **/
    public Catalog(String fp)
    {
@@ -30,8 +30,8 @@ public class Catalog
    /**
    Checks hashtable and adds database
    
-   @param String name of Database
-   @return true if able to create Database of that name, false otherwise
+   @param   name  String name of Database
+   @return        boolean
    **/
    public boolean createDatabase(String name)
    {
@@ -50,8 +50,8 @@ public class Catalog
    Drops a database from the hashtable
    May need to add a check for and delete files section to keep already saved databases from reappearing
    
-   @param String name of Database
-   @return true if able to drop Database of that name, false otherwise
+   @param   name  String name of Database
+   @return        boolean
    **/
    public boolean dropDatabase(String name)
    {
@@ -69,8 +69,8 @@ public class Catalog
    /**
    Checks the hashtable for the corrosponding database, if it is not found in the hash then it attempts to load a .ser file
    
-   @param String name of Database
-   @return true if able to load Database of that name, false otherwise
+   @param   name  String name of Database
+   @return        boolean
    **/
    public boolean loadDatabase(String name)
    {
@@ -90,7 +90,7 @@ public class Catalog
    /**
    Saves the current database to the programs directory/catalog/"database name".ser
    
-   @return boolean
+   @return        boolean
    **/
    public boolean saveDatabase()
    {
