@@ -3,21 +3,14 @@ import java.util.Hashtable;
 public class Database implements DatabaseInterface
 {
 	private String DBname;
-   private Hashtable database;
-	
+	private Hashtable<String, Table> database;
 	
 	public Database(String DBname)
 	{
       this.DBname=DBname;
-		this.database=initializeHashTable(); //constructor to create db
+      database = new Hashtable<String, Database>();
+
 	}
-	
-  private Hashtable initializeHashTable() //creates the hashtable
-  {
-     Hashtable<String, Table> db = new Hashtable<String, Table>();
-     return db;
-  }
-  
   
   /*
   creates the table, puts it in the database.
@@ -25,18 +18,16 @@ public class Database implements DatabaseInterface
   Hashes table name and checks if it is there or 
   not and either successfully adds or doesn't. 
   */
-  public void createTable(String name, Column def)
+  public boolean createTable(String name, Column def)
   {
-      Table n = this.database.get(name);
-      if (n != null) //creates the table
+      if (database.get(name) == null) //creates the table if doesn't exist
       {
-         n=new Table ();//need table parameters
-         this.database.put(name, n);
-         System.out.println("success, table "+name+" added");         
+         this.database.put(name, new Table());
+         return true;
       }
       else
       {
-         System.out.println("error table exists");         
+         return false;       
       }
   
   }
@@ -48,17 +39,17 @@ public class Database implements DatabaseInterface
   If it's not, error is thrown. 
   */
 	
- public void dropTable(String name)
+ public boolean dropTable(String name)
  {
-      Table n = this.database.get(name);
-      if (n != null) //creates the table
+      //if table exists with the name it removes it
+      if (database.get(name) != null)      
       {
          this.database.remove(name);
-         System.out.println("Successfully dropped "+ name);
+         return true;
       }
       else
       {
-         System.out.println("error table doesn't exist");
+         return false;
       }
  }  
    	
