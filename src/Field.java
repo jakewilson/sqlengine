@@ -18,6 +18,15 @@ public class Field implements Serializable
 	{
 		this.col = c;
 		this.ft = col.getFieldType();
+		this.value = c.isNotNull() ? "" : null;
+	}
+
+	public Field(Column c, String value)
+	{
+		this.col = c;
+		this.ft = col.getFieldType();
+		this.value = c.isNotNull() ? "" : null;
+		setValue(value);
 	}
 
 	public boolean setValue(String val)

@@ -32,8 +32,4 @@ public class RecordTest {
         assertEquals(f4.getValue(), r.getField("BiRthday").getValue());
     }
 
-    @Test
-    public void testGetField() throws Exception {
-
-    }
 }

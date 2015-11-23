@@ -142,7 +142,7 @@ public class FieldTest {
         Field f = new Field(charColumn);
 
         f.setValue("hello there!");
-        assertEquals(null, f.getValue());
+        assertEquals("", f.getValue());
     }
 
     @Test
