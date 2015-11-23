@@ -16,12 +16,11 @@ public class Record implements Serializable
   	/**
   	Adds a field to the hashtable
   
-  	@param  colName String name of the Column the field is in
   	@param  f       Field to be hashed
   	**/
-	public void addField(String colName, Field f)
+	public void addField(Field f)
 	{
-		this.fields.put(colName, f);
+		this.fields.put(f.getColumn().getName().toLowerCase(), f);
 	}
   
   	/**
@@ -32,13 +31,10 @@ public class Record implements Serializable
   	**/
 	public Field getField(String colName)
 	{
-    		if (fields.containsKey(colName))
-    		{        	 	
-      			return fields.get(colName);   
-    		}
-    		else
-    		{
-      			return null;
-    		}
+		colName = colName.toLowerCase();
+    	if (fields.containsKey(colName))
+    		return fields.get(colName);
+
+		return null;
   	}
 }
