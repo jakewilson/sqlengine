@@ -91,7 +91,7 @@ public class Catalog
    {
       try
       {
-         FileOutputStream fileOut = new FileOutputStream(filePath));
+         FileOutputStream fileOut = new FileOutputStream(filePath);
          ObjectOutputStream out = new ObjectOutputStream(fileOut);
          out.writeObject(current);
          out.close();

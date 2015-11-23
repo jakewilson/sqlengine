@@ -116,6 +116,20 @@ public class FieldTest {
     }
 
     @Test
+    public void testSetValueMonthDayInvalid() throws Exception {
+        Field f = new Field(dateColumn);
+
+        assertEquals(false, f.setValue("2/30/93"));
+    }
+
+    @Test
+    public void testSetValueMonthValid() throws Exception {
+        Field f = new Field(dateColumn);
+
+        assertEquals(true, f.setValue("2/29/93"));
+    }
+
+    @Test
     public void testGetValue() throws Exception {
         Field f = new Field(intColumn);
 
