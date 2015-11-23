@@ -52,7 +52,16 @@ public class Database implements Serializable
       {
          return false;
       }
- }  
+ }
+
+    /**
+     * Returns the name of the database
+     * @return the name of the database
+     */
+    public String getName()
+    {
+        return name;
+    }
    	
 }
 

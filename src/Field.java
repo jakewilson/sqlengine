@@ -1,3 +1,4 @@
+import java.util.Date;
 import java.util.Hashtable;
 import java.io.Serializable;
 import java.text.*;
@@ -13,23 +14,21 @@ public class Field implements Serializable
    
    @param c Column
    **/
-	public Field(Column c, String value)
+	public Field(Column c)
 	{
 		this.col = c;
 		this.ft = col.getFieldType();
 	}
 
-	public boolean setType(String val)
+	public boolean setValue(String val)
 	{
 		if(ensureType(val))
 		{
 			value = val;
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
 	}
    
    /**
@@ -41,72 +40,82 @@ public class Field implements Serializable
 	private boolean ensureType(String val)
 	{
 		Type t = ft.getType();
-		int decimal;
+
 		switch(t)
 		{
-			case INTEGER:	try
-					{
-						Integer.parseInt(val);
-						if(val.length() <= ft.getPrecision())
-						{
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					}catch(NumberFormatException nfex)
-					{
-						return false;
-					}
-			case NUMBER:	try
-					{
-						Double.parseDouble(val);
-						decimal = val.indexOf('.');
-						if (decimal != -1)
-						{
-							if(val.length() <= ft.getPrecision() + 1)
-							{
-								if(val.substring(decimal).length() <= ft.getScale())
-								{
-									return true;
-								}
-								return false;
-							}
-							else
-							{
-								return false;
-							}
-						}
-						else
-						{
-							if(val.length() <= ft.getPrecision())
-							{
-								return true;
-							}
-							else
-							{
-								return false;
-							}
-						}
-					}catch(NumberFormatException nfex)
-					{
-						return false;
-					}
-			case CHARACTER:	if(val.length() <= ft.getPrecision())
-					{
+			case INTEGER:
+				try
+				{
+					Integer.parseInt(val);
+					if(val.length() <= ft.getPrecision())
 						return true;
+				} catch (NumberFormatException nfex) {}
+				return false;
+
+			case NUMBER:
+				try
+				{
+					Double.parseDouble(val);
+					int decimal = val.indexOf('.');
+					if (decimal != -1) // if the number contains a decimal point
+					{
+						if (val.length() <= ft.getPrecision() + 1)
+							if (val.substring(decimal + 1).length() <= ft.getScale())
+								return true;
 					}
 					else
-					{
-						return false;
-					}
-			case DATE:
-						if (new SimpleDateFormat().parse(val, new ParsePosition(0)) != null)
+						if(val.length() <= ft.getPrecision())
 							return true;
-						return false;
-			default:	return false;		
+				}catch(NumberFormatException nfex)
+				{
+					/* fall through */
+				}
+				return false;
+
+			case CHARACTER:
+				if(val.length() <= ft.getPrecision())
+					return true;
+
+				return false;
+
+			case DATE:
+				return isDateValid(val);
 		}
+
+		return false;
+	}
+
+	/**
+	 * Returns whether a date is valid or not
+	 * @param date the date to check
+	 * @return whether the date is valid or not
+	 */
+	private boolean isDateValid(String date)
+	{
+		int slash = date.indexOf('/');
+		try
+		{
+			int month = Integer.parseInt(date.substring(0, slash));
+			if (month < 1 || month > 12)
+				return false;
+
+			int secondSlash = date.indexOf('/', slash + 1);
+			int day = Integer.parseInt(date.substring(slash + 1, secondSlash));
+			if (day < 1 || day > 31)
+				return false;
+
+			if (month == 2 && day > 29)
+				return false;
+
+			int year = Integer.parseInt(date.substring(secondSlash + 1));
+			if (year < 0)
+				return false;
+		} catch (NumberFormatException nfex)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	public String getValue()
