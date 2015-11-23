@@ -8,7 +8,6 @@ import static org.junit.Assert.*;
 public class FieldTypeTest {
     @Test
     public void testGetType() throws  Exception{
-        System.out.println("Hello world");
         FieldType ft = new FieldType(Type.INTEGER);
         assertEquals(Type.INTEGER,ft.getType());
     }

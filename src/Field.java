@@ -5,7 +5,7 @@ import java.text.*;
 public class Field implements Serializable
 {
 	private Column col;
-	private  String value;
+	private String value;
 	private FieldType ft;
    
    /**
@@ -13,10 +13,10 @@ public class Field implements Serializable
    
    @param c Column
    **/
-	public Field(Column c)
+	public Field(Column c, String value)
 	{
 		this.col = c;
-		ft = col.getFieldType();		
+		this.ft = col.getFieldType();
 	}
 
 	public boolean setType(String val)
