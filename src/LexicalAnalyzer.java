@@ -1,7 +1,8 @@
-/**
- * This program performs Lexical Analysis for the wSQLx engine (Group A3)
- * Written by: Michael Smith
- * Date: 11/22/2015
+/**LexicalAnalyzer.java
+ * 
+ * Performs Lexical Analysis for the wSQLx engine
+ * 
+ * Written by Michael Smith on 11/22/15
  */
 
 import java.util.StringTokenizer;
@@ -10,7 +11,12 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 	static final String[] KEYWORDS = {"CREATE", "DROP", "SAVE","COMMIT","LOAD","DATABASE","TABLE","INSERT", "VALUES","INTO",
 								"DELETE","FROM","UPDATE","WUPDATE","SELECT","WSELECT","WHERE","AND","OR","AS"}; //list of all keywords defined in wSQLx
 	static final int MAX_TOKEN_LENGTH = 128;
-	public static String[] main(String inputString){
+	/**
+	 * Takes an input string and returns tokens as an array of strings
+	 * @param inputString the wSQLx command to be tokenized
+	 * @return tokens as an array of strings
+	 */
+	public static String[] tokenize(String inputString){
    /*
 	* ----------------------
 	* -----DECLARATIONS-----
