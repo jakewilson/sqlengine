@@ -54,5 +54,6 @@ enum CommandType {
     SAVE_DB,
     INSERT,
     UPDATE,
-    DELETE
+    DELETE,
+    SELECT
 }

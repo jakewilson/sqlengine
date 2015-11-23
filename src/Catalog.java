@@ -3,30 +3,36 @@ import java.io.*;
 
 public class Catalog
 {   
-   private Hashtable<String, Database> databaseNames = new Hashtable<String, Database>();
-   private String currentName;      
+   private Hashtable<String, Database> databaseNames;
    private Database current;
+
+   private String filePath;
    
-   /*
-   Maybe attempt to load related database files from an expected path in the constructor, and hash them so that loadDatabase
-   can work faster. 
-   */
+   /**
+   Basic Constructor
+   **/
    public Catalog()
    {
-      //constructor stuff            
+      this.databaseNames = new Hashtable<String, Database>();               
    }
    
-   /*
-   Change filepath constructor, probably not needed
-   */
-   public Catalog(String filePath)
+   /**
+   Filepath Constructor
+   
+   @param   fp String with filepath for load/save operations
+   **/
+   public Catalog(String fp)
    {
-      //overloaded constructor stuff
+      this.databaseNames = new Hashtable<String, Database>();
+      this.filePath = fp;
    }
    
-   /*
+   /**
    Checks hashtable and adds database
-   */
+   
+   @param   name  String name of Database
+   @return        boolean
+   **/
    public boolean createDatabase(String name)
    {
       if (!databaseNames.containsKey(name))
@@ -40,10 +46,13 @@ public class Catalog
       }      
    }
    
-   /*
+   /**
    Drops a database from the hashtable
    May need to add a check for and delete files section to keep already saved databases from reappearing
-   */
+   
+   @param   name  String name of Database
+   @return        boolean
+   **/
    public boolean dropDatabase(String name)
    {
       if (databaseNames.containsKey(name))
@@ -51,65 +60,45 @@ public class Catalog
          databaseNames.remove(name);
          return true;   
       }
-      else
-      {
-         return false;
-      }
+
+      return false;
    }
    
-   /*
+   /**
    Checks the hashtable for the corrosponding database, if it is not found in the hash then it attempts to load a .ser file
-   Serialization code needs checking and modifying for the entire database, maybe each object in the database being saved appends to the same file?
-   */
+   
+   @param   name  String name of Database
+   @return        boolean
+   **/
    public boolean loadDatabase(String name)
    {
       if (databaseNames.containsKey(name))
       {
          this.current = databaseNames.get(name);
-         this.currentName = name;
-         return true;   
-      }
-      else
-      {
-         try
-         {
-            FileInputStream fileIn = new FileInputStream("/catalog/" + name + ".ser");
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            this.current = (Database) in.readObject();
-            this.currentName = name;
-            in.close();
-            fileIn.close();
-         }catch(IOException i)
-         {
-            System.out.println("Failed to load: File not found");
-            return false;
-         }catch(ClassNotFoundException c)
-         {
-            System.out.println("Failed to load: Incorrect object type");                       
-            return false;
-         }
          return true;
       }
+
+      return false;
    }
    
    
-   /*
-   Saves the current database to the programs director/catalog/"database name".ser
-   Serialization code needs checking and modifying for the entire database, maybe each object in the database being saved appends to the same file?
-   */
+   /**
+   Saves the current database to the programs directory/catalog/"database name".ser
+   
+   @return        boolean
+   **/
    public boolean saveDatabase()
    {
       try
       {
-         FileOutputStream fileOut = new FileOutputStream("/catalog/" + currentName + ".ser");
+         FileOutputStream fileOut = new FileOutputStream(filePath);
          ObjectOutputStream out = new ObjectOutputStream(fileOut);
          out.writeObject(current);
          out.close();
          fileOut.close();
-         System.out.println("Data saved in /catalog/" + currentName + ".ser");
-      }catch(IOException i)
+      } catch (IOException i)
       {
-          System.out.println("Failed to save");
+         return false;
       }
 
       return true;

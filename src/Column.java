@@ -10,6 +10,7 @@ import java.io.Serializable;
  * Created by jakewilson on 11/15/15.
  */
 public class Column implements Serializable {
+
     private Column next;
 
     private String name;

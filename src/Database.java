@@ -21,6 +21,7 @@ public class Database implements Serializable
   */
   public boolean createTable(String name, Column def)
   {
+      name = name.toLowerCase(); // ensure case insensitivity
       if (database.get(name) == null) //creates the table if doesn't exist
       {
          this.database.put(name, new Table());
@@ -42,8 +43,9 @@ public class Database implements Serializable
 	
  public boolean dropTable(String name)
  {
+     name = name.toLowerCase();
       //if table exists with the name it removes it
-      if (database.get(name) != null)      
+      if (database.get(name) != null)
       {
          this.database.remove(name);
          return true;
@@ -52,7 +54,16 @@ public class Database implements Serializable
       {
          return false;
       }
- }  
+ }
+
+    /**
+     * Returns the name of the database
+     * @return the name of the database
+     */
+    public String getName()
+    {
+        return name;
+    }
    	
 }
 
