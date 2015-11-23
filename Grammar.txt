@@ -1,0 +1,152 @@
+Command:
+	CreateDB |	--System Level--
+	DropDB |
+	Save |
+	Load|
+	CreateTable |	--Data Definition--
+	DropTable |
+	Insert |	--Data Manipulation--
+	Delete |
+	Update |
+	wUpdate |
+	Select |
+	wSelect
+
+CreateDB:
+	CREATE DATABASE NAME;
+
+DropDB:
+	DROP DATABASE NAME;
+
+Save:
+	SAVE; |
+	COMMIT;
+
+Load:
+	LOAD DATABASE NAME;
+
+CreateTable:
+	CREATE TABLE NAME (FieldDef);
+
+FieldDefList:
+	, FieldDef |
+	empty
+
+FieldDef:
+	NAME Type Constraints FieldDefList
+
+Type:
+	Int | Num | Char | DATE
+
+Int:
+	INTEGER Param1
+
+Char:
+	CHARACTER Param1
+
+Param1:
+	(INTEGER_CONSTANT) |
+	empty
+
+Num:
+	NUMBER Param2a
+
+Param2a:
+	(INTEGER_CONSTANT Param2b |
+	empty
+
+Param2b:
+	) |
+	, INTEGER_CONSTANT )
+
+Constraints:
+	NOT NULL |
+	empty
+
+DropTable:
+	DROP TABLE NAME;
+
+Insert:
+	INSERT INTO NAME FieldList VALUES (Literals);
+
+FieldList:
+	(Fields) |
+	empty
+
+Fields:
+	NAME NextField
+
+NextField:
+	, Fields |
+	empty
+
+Literals:
+	Literal NextLiteral
+
+Literal:
+	STRING |
+	NUMBER | 
+	INTEGER |
+	DATE
+
+NextLiteral:
+	, Literals |
+	empty
+
+Delete:
+	DELETE FROM NAME Where;
+
+Where:
+	WHERE Condition |
+	empty
+
+Condition:
+	NAME Relop Operand ConditionList
+
+Relop:
+	= |
+	< |
+	> |
+	<= |
+	>= |
+	<>
+
+Operand:
+	NAME|
+	DATE|
+	NUMBER|
+	INTEGER|
+	STRING
+
+ConditionList:
+	AND Condition |
+	OR Condition |
+	empty
+
+Update:
+	UPDATE NAME SET SetList Where;
+
+Expression:
+	Operand /*May be changed later to support expressions*/
+
+SetList:
+	NAME = Expression NextSet
+
+NextSet:
+	, SetList |
+	empty
+
+wUpdate:
+	WUPDATE NAME SET SetList Where;
+
+Select:
+	SELECT SelectParams FROM NAME Where;
+
+wSelect:
+	WSELECT SelectParams FROM NAME Where;
+
+SelectParams:
+	Fields | 
+	*
+
+
