@@ -9,6 +9,7 @@ public class FieldTypeTest {
     @Test
     public void testGetType() throws  Exception{
         FieldType ft = new FieldType(Type.INTEGER);
+        assertEquals(Type.INTEGER,ft.getType());
     }
     @Test
     public void testGetPrecision() throws Exception{
