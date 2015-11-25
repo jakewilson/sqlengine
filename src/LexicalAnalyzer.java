@@ -7,9 +7,10 @@
 
 import java.util.StringTokenizer;
 
-public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
+public class LexicalAnalyzer{
 	static final String[] KEYWORDS = {"CREATE", "DROP", "SAVE","COMMIT","LOAD","DATABASE","TABLE","INSERT", "VALUES","INTO",
-								"DELETE","FROM","UPDATE","WUPDATE","SELECT","WSELECT","WHERE","AND","OR","AS"}; //list of all keywords defined in wSQLx
+								"DELETE","FROM","UPDATE","WUPDATE","SELECT","WSELECT","WHERE","AND","OR","AS", "NOT", "NULL",
+								"DATE", "CHARACTER", "INTEGER", "NUMBER"}; //list of all keywords defined in wSQLx
 	static final int MAX_TOKEN_LENGTH = 128;
 	/**
 	 * Takes an input string and returns tokens as an array of strings
@@ -22,6 +23,9 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 	* -----DECLARATIONS-----
 	* ----------------------
 	*/
+		if(inputString == null)//error
+			return null;
+		
 		boolean inString = false;
 		boolean inComment = false;
 		char[] input = null;
@@ -56,7 +60,7 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 			
 			while(inString){
 				if((int)input[i] == 39){
-					output.append("STRING " + (new String(token)).trim() + "\n");
+					output.append("CHARACTER_CONSTANT " + (new String(token)).trim() + "\n");
 					inString = false;
 					i++;//skip the single quote on next iteration
 					break;
@@ -156,7 +160,7 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 				}//if
 				
 				else{
-					output.append("ID " + new String(token).trim()+ "\n"); //used for parser					
+					output.append("NAME " + new String(token).trim()+ "\n"); //used for parser					
 				}//else
 				
 				token = new char[MAX_TOKEN_LENGTH]; //reset the token array
@@ -221,17 +225,17 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 				token = trimToken(token);
 				
 				if(containsDecimal){
-					output.append("NUMBER " + (new String(token)).trim() + "\n");//parser
+					output.append("NUMBER_CONSTANT " + (new String(token)).trim() + "\n");//parser
 				}//if NUMBER
 				
 				else if(isDate){
 					if(charCount != 6 && charCount != 8)
 						return null;
-					output.append("DATE " + (new String(token)).trim() + "\n");//parser
+					output.append("DATE_CONSTANT " + (new String(token)).trim() + "\n");//parser
 				}//else if DATE
 				
 				else{
-					output.append("INTEGER " + (new String(token)).trim() + "\n");//parser
+					output.append("INTEGER_CONSTANT " + (new String(token)).trim() + "\n");//parser
 				}//else (INTEGER)
 				
 				containsDecimal = false;
@@ -353,7 +357,7 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 	 * ------------------------------
 	 */
 	
-	static int checkKeywords(char[] tokenArray){ //takes a character array and returns true if it is a keyword or false if it isn't
+	private static int checkKeywords(char[] tokenArray){ //takes a character array and returns true if it is a keyword or false if it isn't
 		/*
 		for(int i = 0; i < tokenArray.length; i++){
 			if((int)tokenArray[i] < 65 || (int)tokenArray[i] > 122)
@@ -372,7 +376,7 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 		return -1;
 	}//checkKeywords
 	
-	static char[] trimToken(char[] rawToken){//gets rid of unused space on the given token
+	private static char[] trimToken(char[] rawToken){//gets rid of unused space on the given token
 		char[] token = null;
 		int i = 0;
 		while((int)rawToken[i] != 0 && i < rawToken.length){
@@ -389,7 +393,7 @@ public class LexicalAnalyzer{ //TODO Can add RENAME functionality later
 		return token;
 	}//trimToken
 	
-	static boolean isText(char character, boolean numeric){//returns true if the given character can be used in an identifier
+	private static boolean isText(char character, boolean numeric){//returns true if the given character can be used in an identifier
 		if((int)character > 64 && (int)character < 91)//uppercase letters
 			return true;
 		else if((int)character > 96 && (int)character < 123)//lowercase letters
