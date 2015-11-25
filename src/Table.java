@@ -44,6 +44,16 @@ public class Table implements Serializable
 		this.records = new ArrayList<Record>();
 		this.setFirst(first);
 	}
+
+	/**
+	 * Adds a record to the table
+	 * @param r the record to add
+	 * @return whether the record was successfully added
+	 */
+	public boolean addRecord(Record r)
+	{
+		return records.add(r);
+	}
 	
 	public Column getFirst()
 	{
@@ -80,18 +90,27 @@ public class Table implements Serializable
 	 */
 	public String select(ArrayList<Column> col)
 	{
-		String s = null;
+		String s = "";
 
 		if(col != null)
 		{
 			for(Column c : col)
-				s += c.getName() + " | ";
+			{
+				s += c.getName();
+				// only add the pipe if it's not the last column
+				s += (col.indexOf(c) == col.size() - 1) ? "" : " | ";
+			}
+
 			s += "\n";
 
 			for(Record r : this.records)
 			{
 				for(Column c : col)
-					s += r.getField(c.getName()).getValue() + " | ";
+				{
+					s += r.getField(c.getName()).getValue();
+					// only add the pipe if it's not the last column
+					s += (col.indexOf(c) == col.size() - 1) ? "" : " | ";
+				}
 				s += "\n";
 			}
 		}

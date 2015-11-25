@@ -4,9 +4,9 @@ import java.io.*;
 public class Catalog
 {   
    private Hashtable<String, Database> databaseNames;
-   private String currentName;
-   private String filePath;      
    private Database current;
+
+   private String filePath;
    
    /**
    Basic Constructor
@@ -60,10 +60,8 @@ public class Catalog
          databaseNames.remove(name);
          return true;   
       }
-      else
-      {
-         return false;
-      }
+
+      return false;
    }
    
    /**
@@ -77,13 +75,10 @@ public class Catalog
       if (databaseNames.containsKey(name))
       {
          this.current = databaseNames.get(name);
-         this.currentName = name;
-         return true;   
+         return true;
       }
-      else
-      {
-         return false;
-      }
+
+      return false;
    }
    
    
@@ -96,13 +91,12 @@ public class Catalog
    {
       try
       {
-         FileOutputStream fileOut = new FileOutputStream("/catalog/" + currentName + ".ser");
+         FileOutputStream fileOut = new FileOutputStream(filePath);
          ObjectOutputStream out = new ObjectOutputStream(fileOut);
          out.writeObject(current);
          out.close();
          fileOut.close();
-         return true;
-      }catch(IOException i)
+      } catch (IOException i)
       {
          return false;
       }
