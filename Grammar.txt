@@ -1,22 +1,31 @@
 Command:
-	CreateDB |	--System Level--
-	DropDB |
+	CreateA |
+	DropA |
 	Save |
-	Load|
-	CreateTable |	--Data Definition--
-	DropTable |
-	Insert |	--Data Manipulation--
+	Load|	
+	Insert |	
 	Delete |
 	Update |
 	wUpdate |
 	Select |
 	wSelect
 
-CreateDB:
-	CREATE DATABASE NAME;
+CreateA:
+	CREATE CreateB
+	
+CreateB:
+	Database |
+	CreateTable
 
-DropDB:
-	DROP DATABASE NAME;
+DropA:
+	DROP DropB
+	
+DropB:
+	Database |
+	DropTable
+	
+Database:
+	DATABASE NAME;
 
 Save:
 	SAVE; |
@@ -26,7 +35,7 @@ Load:
 	LOAD DATABASE NAME;
 
 CreateTable:
-	CREATE TABLE NAME (FieldDef);
+	TABLE NAME (FieldDef);
 
 FieldDefList:
 	, FieldDef |
@@ -64,7 +73,7 @@ Constraints:
 	empty
 
 DropTable:
-	DROP TABLE NAME;
+	TABLE NAME;
 
 Insert:
 	INSERT INTO NAME FieldList VALUES (Literals);
@@ -84,10 +93,10 @@ Literals:
 	Literal NextLiteral
 
 Literal:
-	STRING |
-	NUMBER | 
-	INTEGER |
-	DATE
+	CHARACTER_CONSTANT |
+	NUMBER_CONSTANT | 
+	INTEGER_CONSTANT |
+	DATE_CONSTANT
 
 NextLiteral:
 	, Literals |
@@ -113,10 +122,10 @@ Relop:
 
 Operand:
 	NAME|
-	DATE|
-	NUMBER|
-	INTEGER|
-	STRING
+	DATE_CONSTANT|
+	NUMBER_CONSTANT|
+	INTEGER_CONSTANT|
+	CHARACTER_CONSTANT
 
 ConditionList:
 	AND Condition |
