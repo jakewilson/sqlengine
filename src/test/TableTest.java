@@ -52,8 +52,8 @@ public class TableTest {
     @Test
     public void testSelectJustColumns() throws Exception {
         Table table = new Table("Employee", eno);
-        ArrayList<Column> cols = new ArrayList<Column>();
-        cols.add(eno); cols.add(name); cols.add(age); cols.add(bday);
+        ArrayList<String> cols = new ArrayList<String>();
+        cols.add(eno.getName()); cols.add(name.getName()); cols.add(age.getName()); cols.add(bday.getName());
 
         String result = table.select(cols);
 
@@ -63,8 +63,8 @@ public class TableTest {
     @Test
     public void testSelectWithRows() throws Exception {
         Table table = new Table("Employee", eno);
-        ArrayList<Column> cols = new ArrayList<Column>();
-        cols.add(eno); cols.add(name); cols.add(age); cols.add(bday);
+        ArrayList<String> cols = new ArrayList<String>();
+        cols.add(eno.getName()); cols.add(name.getName()); cols.add(age.getName()); cols.add(bday.getName());
 
         String expectedResult = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
         Record r = new Record();
@@ -93,8 +93,8 @@ public class TableTest {
     @Test
     public void testSelectOnlyCertainColumns() throws Exception {
         Table table = new Table("Employee", eno);
-        ArrayList<Column> cols = new ArrayList<Column>();
-        cols.add(age); cols.add(eno);
+        ArrayList<String> cols = new ArrayList<String>();
+        cols.add(age.getName()); cols.add(eno.getName());
 
         String expectedResult = age.getName() + " | " + eno.getName() + "\n";
         Record r = new Record();

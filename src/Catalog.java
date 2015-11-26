@@ -103,4 +103,13 @@ public class Catalog
 
       return true;
    }
+
+   /**
+    * Returns the current database
+    * @return the current database
+    */
+   public Database getCurrent()
+   {
+      return current;
+   }
 }

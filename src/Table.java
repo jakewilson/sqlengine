@@ -85,31 +85,31 @@ public class Table implements Serializable
 	/**
 	 * This method is used to print 
 	 * Column names and values of the records
-	 * @param col ArrayList<Column> that is used to print values
+	 * @param columnNames array list of column names
 	 *
 	 */
-	public String select(ArrayList<Column> col)
+	public String select(ArrayList<String> columnNames)
 	{
 		String s = "";
 
-		if(col != null)
+		if(columnNames != null)
 		{
-			for(Column c : col)
+			for(String name : columnNames)
 			{
-				s += c.getName();
+				s += name;
 				// only add the pipe if it's not the last column
-				s += (col.indexOf(c) == col.size() - 1) ? "" : " | ";
+				s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
 			}
 
 			s += "\n";
 
 			for(Record r : this.records)
 			{
-				for(Column c : col)
+				for(String name : columnNames)
 				{
-					s += r.getField(c.getName()).getValue();
+					s += r.getField(name).getValue();
 					// only add the pipe if it's not the last column
-					s += (col.indexOf(c) == col.size() - 1) ? "" : " | ";
+					s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
 				}
 				s += "\n";
 			}
