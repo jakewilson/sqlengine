@@ -98,6 +98,8 @@ public class Parser {
 	static final int DEFAULT_SCALE = 12;
 	
 	static int line = 0;//iterator
+
+	static boolean debug = false;
 	
 	//Below variables are used as temporary holding spaces to piece together a command object
 	static Command command = null;
@@ -135,7 +137,9 @@ public class Parser {
 	public static Command parse(String inputString) throws ParseException{
 		input = LexicalAnalyzer.tokenize(inputString);
 		if(input == null) //LexicalAnalyzer will return null if it detects an error in the input tokens
-			throw new ParseException();
+			throw new ParseException("bad input");
+
+		line = 0;
 		
 		printTokens();//debug
 		
@@ -442,13 +446,13 @@ public class Parser {
 		checkToken("NAME");
 		String tableName = getLastValue();
 		where();
-		command = new DMLCommand(CommandType.DELETE, tableName);//TODO Add params
+		command = new DMLCommand(CommandType.DELETE, tableName); //TODO Add params
 		checkToken(";");
 		return;
 	}//deleteStatement
 	
 	static void where() throws ParseException{// 28
-		if(inFollow(28))
+		if(!inFirst(28))
 			return;
 		checkToken("WHERE");
 		condition();
@@ -569,8 +573,7 @@ public class Parser {
 		checkToken("SELECT");
 		selectParams();
 		checkToken("FROM");
-		checkToken("NAME");
-		String tableName = getLastValue();
+		String tableName = input[line++];
 		where();
 		command = new DMLCommand(CommandType.SELECT, tableName);//TODO Add params
 		checkToken(";");
@@ -617,7 +620,7 @@ public class Parser {
 			valueToCheck = input[line];
 		
 		for(int i = 0; i < firstSets[nonTerminal].length; i++){
-			if(firstSets[nonTerminal][i].equals(valueToCheck))
+			if(firstSets[nonTerminal][i].equalsIgnoreCase(valueToCheck))
 				return true;
 		}//for
 		
@@ -636,16 +639,16 @@ public class Parser {
 			valueToCheck = input[line];
 		
 		for(int i = 0; i < followSets[nonTerminal].length; i++){
-			if(followSets[nonTerminal][i].equals(valueToCheck))
+			if(followSets[nonTerminal][i].equalsIgnoreCase(valueToCheck))
 				return true;
 		}//for
 		return false;
 	}//inFollow
 	
 	private static void printTokens(){//This function is used to test the Lexer
-		for(int i = 0; i < input.length; i++)
-			System.out.println(input[i]);
-		return;
+		if (debug)
+			for(int i = 0; i < input.length; i++)
+				System.out.println(input[i]);
 	}//printInput
 	
 	private static String formatDate(String dateToken){//converts date string from "DATE MM DD YY[YY]" to "MM/DD/[YY]YY"
@@ -662,6 +665,10 @@ public class Parser {
 	private static void reject() throws ParseException{
 		throw new ParseException();
 	}//reject
+
+	private static void reject(String expected, String actual) throws ParseException {
+		throw new ParseException("Expected: " + expected + " actual: " + actual);
+	}
 	
 	private static void checkToken(String expectedValue) throws ParseException{
 		String valueToCheck = null;
@@ -674,14 +681,14 @@ public class Parser {
 		else
 			valueToCheck = input[line];
 		
-		if(valueToCheck.equals(expectedValue))
+		if(valueToCheck.equalsIgnoreCase(expectedValue))
 			line++;
 		else
-			reject();
+			reject(expectedValue, valueToCheck);
 		
 		return;
 	}//checkToken
-	
+
 	private static String getLastValue(){//returns the value of the last token
 		StringBuilder output = new StringBuilder();
 		
