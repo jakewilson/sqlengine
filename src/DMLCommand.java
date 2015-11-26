@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class DMLCommand extends Command {
 
     private ArrayList<String> columnNames;
+    public boolean allColumns = false;
 
     public DMLCommand(CommandType type, String subject, Column column) {
         super(type, subject, column);
@@ -33,6 +34,14 @@ public class DMLCommand extends Command {
      */
     public void setColumnNames(ArrayList<String> columnNames) {
         this.columnNames = columnNames;
+    }
+
+    /**
+     * Returns the column names of the command
+     * @return the column names of the command
+     */
+    public ArrayList<String> getColumnNames() {
+        return columnNames;
     }
 
 }

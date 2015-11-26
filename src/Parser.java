@@ -4,6 +4,7 @@
  * Throws a ParseException if an error is detected
  * Returns a command object if no error is detected
  */
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Parser {
@@ -31,7 +32,7 @@ public class Parser {
 			{"INSERT"},	
 			{"("},
 			{"NAME"},	
-			{","},
+			{","}, // 23
 			{"DATE_CONSTANT", "NUMBER_CONSTANT", "INTEGER_CONSTANT", "CHARACTER_CONSTANT"},
 			{"DATE_CONSTANT", "NUMBER_CONSTANT", "INTEGER_CONSTANT", "CHARACTER_CONSTANT"},
 			{","},
@@ -100,6 +101,9 @@ public class Parser {
 	static int line = 0;//iterator
 
 	static boolean debug = false;
+	static boolean allColumns = true;
+
+	static ArrayList<String> fieldNames = new ArrayList<String>();
 	
 	//Below variables are used as temporary holding spaces to piece together a command object
 	static Command command = null;
@@ -382,17 +386,20 @@ public class Parser {
 	static void fieldList() throws ParseException{// 21
 		if(inFollow(21))
 			return;
+		fieldNames.clear();
 		checkToken("(");
 		fields();
+		while (inFirst(23)) {
+			line++;
+			fields();
+		}
 		checkToken(")");
 		return;
-	}//deleteStatement
+	}
 	
 	static void fields() throws ParseException{// 22
-		checkToken("NAME");
-		nextField();
-		return;
-	}//deleteStatement
+		fieldNames.add(input[line++]);
+	}
 	
 	static void nextField() throws ParseException{// 23
 		if(inFollow(23))
@@ -576,6 +583,9 @@ public class Parser {
 		String tableName = input[line++];
 		where();
 		command = new DMLCommand(CommandType.SELECT, tableName);//TODO Add params
+		((DMLCommand)command).setColumnNames(fieldNames);
+		((DMLCommand)command).allColumns = allColumns;
+		allColumns = false;
 		checkToken(";");
 		return;
 	}//deleteStatement
@@ -594,11 +604,13 @@ public class Parser {
 	
 	static void selectParams() throws ParseException{// 40
 		if(input[line].equals("*")){
+			allColumns = true;
 			line++;
 			return;
 		}
 		else
-			fields();
+			fieldList();
+
 		return;
 	}//deleteStatement
 	
