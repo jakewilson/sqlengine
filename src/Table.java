@@ -162,11 +162,9 @@ public class Table implements Serializable
 		Record r = new Record();
 		Field[] f = new Field[columnNames.size()];
 
-		for (int i = 0; i < columnNames.size(); i++) {
-			f[i] = new Field(findColumn(columnNames.get(i)));
-			if (!f[i].setValue(values.get(i)))
+		for (int i = 0; i < columnNames.size(); i++)
+			if (!(f[i] = new Field(findColumn(columnNames.get(i)))).setValue(values.get(i)))
 				return "ERROR: Wrong type: " + values.get(i) + "\n";
-		}
 
 		for (int i = 0; i < f.length; i++)
 			r.addField(f[i]);

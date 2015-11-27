@@ -431,14 +431,19 @@ public class Parser {
 		
 		if  (currentToken.equals("INTEGER_CONSTANT") ||
 			(currentToken.equals("NUMBER_CONSTANT"))    ||
-			(currentToken.equals("CHARACTER_CONSTANT")) ||
-			(currentToken.equals("DATE_CONSTANT"))) {
+			(currentToken.equals("CHARACTER_CONSTANT"))) {
 			String value = tokenizer.nextToken();
 			insertionValues.add(value);
-			line++;
+		}
+		else if (currentToken.equalsIgnoreCase("DATE_CONSTANT")) {
+			String date = tokenizer.nextToken();
+			date += "/" + tokenizer.nextToken();
+			date += "/" + tokenizer.nextToken();
+			insertionValues.add(date);
 		}
 		else
 			reject();
+		line++;
 		return;
 	}//deleteStatement
 	
