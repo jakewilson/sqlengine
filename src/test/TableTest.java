@@ -125,8 +125,48 @@ public class TableTest {
     }
 
     @Test
-    public void testInsert() throws Exception {
-        // TODO
+    public void testInsertSuccess() throws Exception {
+        Table table = new Table("Employee", eno);
+        ArrayList<String> columns = new ArrayList<String>();
+        columns.add(eno.getName()); columns.add(name.getName());
+        columns.add(age.getName()); columns.add(bday.getName());
+
+        ArrayList<String> values = new ArrayList<String>();
+        values.add("4"); values.add("Another"); values.add("12"); values.add("09/14/56");
+
+        assertEquals("\n", table.insert(columns, values));
+
+        String expectedResult = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
+
+        expectedResult += "4 | Another | 12 | 09/14/56\n";
+
+        assertEquals(expectedResult, table.select(columns));
+    }
+
+    @Test
+    public void testInsertWrongNumberOfColumns() throws Exception {
+        Table table = new Table("Employee", eno);
+        ArrayList<String> columns = new ArrayList<String>();
+        columns.add(eno.getName()); columns.add(name.getName());
+        columns.add(age.getName());
+
+        ArrayList<String> values = new ArrayList<String>();
+        values.add("4"); values.add("Another"); values.add("12"); values.add("09/14/56");
+
+        assertEquals("ERROR: Wrong number of values\n", table.insert(columns, values));
+    }
+
+    @Test
+    public void testInsertWrongValues() throws Exception {
+        Table table = new Table("Employee", eno);
+        ArrayList<String> columns = new ArrayList<String>();
+        columns.add(eno.getName()); columns.add(name.getName());
+        columns.add(age.getName()); columns.add(bday.getName());
+
+        ArrayList<String> values = new ArrayList<String>();
+        values.add("4"); values.add("Another"); values.add("hello"); values.add("09/14/56");
+
+        assertEquals("ERROR: Wrong type: hello\n", table.insert(columns, values));
     }
 
     @Test

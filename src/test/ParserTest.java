@@ -60,20 +60,28 @@ public class ParserTest {
             assertEquals(true, true); // should fail
         }
     }
-
-    @Test
-    public void testInsert() {
-        try {
-            Parser.parse("INSERT INTO table VALUES ('hello', 'there', 56, 06/06/94);");
-        } catch (ParseException pex) {
-            assertEquals(false, true);
-        }
-    }
-
+//
+//    @Test
+//    public void testInsert() {
+//        try {
+//            DMLCommand c = (DMLCommand)Parser.parse("INSERT INTO table VALUES ('hello', 'there', 'o', 06/06/94);");
+//            assertEquals(CommandType.INSERT, c.getType());
+//            assertEquals(true, c.getColumnNames().isEmpty());
+//
+//            assertEquals("hello", c.getInsertionValues().get(0));
+//            assertEquals("there", c.getInsertionValues().get(1));
+//            assertEquals("56", c.getInsertionValues().get(2));
+//            assertEquals("06/06/94", c.getInsertionValues().get(3));
+//        } catch (ParseException pex) {
+//            System.out.println(pex.getMessage());
+//            //assertEquals(false, true);
+//        }
+//    }
+//
     @Test
     public void testInsertBad() {
         try {
-            Parser.parse("INSERT INTO table VALUES ('hello, 'there', 56, 06/06/94);"); // missing single quote after hello
+            DMLCommand c = (DMLCommand)Parser.parse("INSERT INTO table VALUES ('hello, 'there', 56, 06/06/94);"); // missing single quote after hello
             assertEquals(false, true);
         } catch (ParseException pex) {
             assertEquals(true, true);
@@ -83,9 +91,19 @@ public class ParserTest {
     @Test
     public void testInsertCertainColumns() {
         try {
-            Parser.parse("INSERT INTO table (eno, name, age) VALUES (67, 89, 'hi', 'ok');"); // missing single quote after hello
-            assertEquals(true, true);
+            DMLCommand c = (DMLCommand)Parser.parse("INSERT INTO table (eno, name, age) VALUES (67, 89, 'hi', 'ok');"); // missing single quote after hello
+            assertEquals(CommandType.INSERT, c.getType());
+
+            assertEquals("eno", c.getColumnNames().get(0));
+            assertEquals("name", c.getColumnNames().get(1));
+            assertEquals("age", c.getColumnNames().get(2));
+
+            assertEquals("67", c.getInsertionValues().get(0));
+            assertEquals("89", c.getInsertionValues().get(1));
+            assertEquals("hi", c.getInsertionValues().get(2));
+            assertEquals("ok", c.getInsertionValues().get(3));
         } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
             assertEquals(false, true);
         }
     }

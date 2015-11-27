@@ -153,10 +153,26 @@ public class Table implements Serializable
 	}
 
 	
-	public boolean insert()
+	public String insert(ArrayList<String> columnNames, ArrayList<String> values)
 	{
+		if (columnNames.size() != values.size())
+			return "ERROR: Wrong number of values\n";
 
-		return false;
+
+		Record r = new Record();
+		Field[] f = new Field[columnNames.size()];
+
+		for (int i = 0; i < columnNames.size(); i++) {
+			f[i] = new Field(findColumn(columnNames.get(i)));
+			if (!f[i].setValue(values.get(i)))
+				return "ERROR: Wrong type: " + values.get(i) + "\n";
+		}
+
+		for (int i = 0; i < f.length; i++)
+			r.addField(f[i]);
+
+		this.addRecord(r);
+		return "\n";
 	}
 
 	// TODO wInsert

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class DMLCommand extends Command {
 
     private ArrayList<String> columnNames;
+    private ArrayList<String> insertionValues;
     public boolean allColumns = false;
 
     public DMLCommand(CommandType type, String subject, Column column) {
@@ -42,6 +43,14 @@ public class DMLCommand extends Command {
      */
     public ArrayList<String> getColumnNames() {
         return columnNames;
+    }
+
+    public void setInsertionValues(ArrayList<String> values) {
+        this.insertionValues = values;
+    }
+
+    public ArrayList<String> getInsertionValues() {
+        return insertionValues;
     }
 
 }

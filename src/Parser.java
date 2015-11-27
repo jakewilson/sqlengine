@@ -104,6 +104,7 @@ public class Parser {
 	static boolean allColumns = true;
 
 	static ArrayList<String> fieldNames = new ArrayList<String>();
+	static ArrayList<String> insertionValues = new ArrayList<String>();
 	
 	//Below variables are used as temporary holding spaces to piece together a command object
 	static Command command = null;
@@ -375,17 +376,20 @@ public class Parser {
 		fieldList();
 		checkToken("VALUES");
 		checkToken("(");
+		insertionValues.clear();
 		literals();
 		checkToken(")");
 		checkToken(";");
 		command = new DMLCommand(CommandType.INSERT, tableName);//TODO Add insert params
+		((DMLCommand)command).setColumnNames(fieldNames);
+		((DMLCommand)command).setInsertionValues(insertionValues);
 		return;
 	}//deleteStatement
 	
 	static void fieldList() throws ParseException{// 21
+		fieldNames.clear();
 		if(!inFirst(16))
 			return;
-		fieldNames.clear();
 		checkToken("(");
 		fields();
 		while (inFirst(23)) {
@@ -416,23 +420,23 @@ public class Parser {
 	
 	static void literal() throws ParseException{// 25
 		String currentToken = null;
-		
+		StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
+
 		if(input[line].contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
-			StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
 			currentToken = tokenizer.nextToken();
 		}//if
 		
 		else
 			currentToken = input[line];
 		
-		if(currentToken.equals("INTEGER_CONSTANT"))
+		if  (currentToken.equals("INTEGER_CONSTANT") ||
+			(currentToken.equals("NUMBER_CONSTANT"))    ||
+			(currentToken.equals("CHARACTER_CONSTANT")) ||
+			(currentToken.equals("DATE_CONSTANT"))) {
+			String value = tokenizer.nextToken();
+			insertionValues.add(value);
 			line++;
-		else if(currentToken.equals("NUMBER_CONSTANT"))
-			line++;
-		else if(currentToken.equals("CHARACTER_CONSTANT"))
-			line++;
-		else if(currentToken.equals("DATE_CONSTANT"))
-			line++;
+		}
 		else
 			reject();
 		return;
