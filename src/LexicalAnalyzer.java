@@ -62,6 +62,7 @@ public class LexicalAnalyzer{
 				if((int)input[i] == 39){ // single quote
 					output.append("CHARACTER_CONSTANT " + (new String(token)).trim() + "\n");
 					inString = false;
+					token = new char[MAX_TOKEN_LENGTH];
 					i++;//skip the single quote on next iteration
 					break;
 				}//if end of string
