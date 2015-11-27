@@ -107,7 +107,10 @@ public class Table implements Serializable
 			{
 				for(String name : columnNames)
 				{
-					s += r.getField(name).getValue();
+					Field f = r.getField(name);
+					if (f == null)
+						return "ERROR: Bad column name '" + name + "'.";
+					s += f.getValue();
 					// only add the pipe if it's not the last column
 					s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
 				}

@@ -13,12 +13,12 @@ public class CommandProcessor {
         this.current = current;
     }
 
-    public void execute(Command c) {
+    public String execute(Command c) {
         switch (c.getType()) {
             case SELECT:
                 Table t = current.getTable(c.getSubject());
                 ArrayList<String> names = ((DMLCommand)c).getColumnNames();
-                if (((DMLCommand) c).allColumns) {
+                if (names.isEmpty() && ((DMLCommand) c).allColumns) {
                     // add all column names if the query was SELECT *
                     Column col = t.getFirst();
                     while (col != null) {
@@ -27,9 +27,10 @@ public class CommandProcessor {
                     }
                 }
 
-                System.out.print(t.select(names));
-                break;
+                return t.select(names);
         }
+
+        return ""; // TODO
     }
 
 }

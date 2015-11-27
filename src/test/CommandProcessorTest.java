@@ -2,14 +2,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import static org.junit.Assert.*;
 
 public class CommandProcessorTest {
 
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
     private Database d;
     private Table t;
@@ -21,7 +17,6 @@ public class CommandProcessorTest {
 
     @Before
     public void setUpStreams() {
-        System.setOut(new PrintStream(outContent));
 
         d = new Database("Work");
         eno  = new Column("ENO", new FieldType(Type.INTEGER, 3), true);
@@ -39,11 +34,10 @@ public class CommandProcessorTest {
 
     @After
     public void cleanUpStreams() {
-        System.setOut(null);
     }
 
     @Test
-    public void testExecute() throws Exception {
+    public void testExecuteSelectAll() throws Exception {
         try {
             Record r = new Record();
             Field f1 = new Field(eno, "0");
@@ -55,9 +49,39 @@ public class CommandProcessorTest {
             String expectedResult = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
             expectedResult += "0 | Jake | 22 | 6/6/94\n";
             CommandProcessor cp = new CommandProcessor(d);
-            cp.execute(Parser.parse("SELECT * FROM Employee;"));
+            String actual = cp.execute(Parser.parse("SELECT * FROM Employee;"));
+            assertEquals(expectedResult, actual);
+        } catch (ParseException pex) {
+            assertEquals(false, true);
+        }
+    }
 
-            assertEquals(expectedResult, outContent.toString());
+    @Test
+    public void testExecuteSelectCertainColumns() throws Exception {
+        try {
+            Record r = new Record();
+            Field f1 = new Field(eno, "0");
+            Field f2 = new Field(name, "Jake");
+            Field f3 = new Field(age, "22");
+            Field f4 = new Field(bday, "6/6/94");
+            r.addField(f1); r.addField(f2); r.addField(f3); r.addField(f4);
+            t.addRecord(r);
+
+            Record r1 = new Record();
+            Field g1 = new Field(eno, "1");
+            Field g2 = new Field(name, "MArtino");
+            Field g3 = new Field(age, "87");
+            Field g4 = new Field(bday, "9/22/87");
+            r1.addField(g1); r1.addField(g2); r1.addField(g3); r1.addField(g4);
+            t.addRecord(r1);
+
+            String expectedResult = "birthdate | name | age\n";
+            expectedResult += "6/6/94 | Jake | 22\n";
+            expectedResult += "9/22/87 | MArtino | 87\n";
+
+            CommandProcessor cp = new CommandProcessor(d);
+            String actual = cp.execute(Parser.parse("SELECT (birthdate, name, age) FROM Employee;"));
+            assertEquals(expectedResult, actual);
         } catch (ParseException pex) {
             assertEquals(false, true);
         }
