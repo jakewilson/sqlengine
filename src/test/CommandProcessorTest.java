@@ -16,7 +16,7 @@ public class CommandProcessorTest {
     public static Column bday;
 
     @Before
-    public void setUpStreams() {
+    public void setUp() {
 
         d = new Database("Work");
         eno  = new Column("ENO", new FieldType(Type.INTEGER, 3), true);
@@ -30,10 +30,6 @@ public class CommandProcessorTest {
 
         d.createTable("Employee", eno);
         t = d.getTable("Employee");
-    }
-
-    @After
-    public void cleanUpStreams() {
     }
 
     @Test

@@ -25,7 +25,7 @@ public class Parser {
 			{"CHARACTER"},
 			{"(", ""},
 			{"NUMBER"},
-			{"("},
+			{"("}, // 16
 			{")", ","},
 			{"NOT"},
 			{"TABLE"},
@@ -371,8 +371,7 @@ public class Parser {
 	static void insert() throws ParseException{// 20
 		checkToken("INSERT");
 		checkToken("INTO");
-		checkToken("NAME");
-		String tableName = getLastValue();
+		String tableName = input[line++];
 		fieldList();
 		checkToken("VALUES");
 		checkToken("(");
@@ -384,7 +383,7 @@ public class Parser {
 	}//deleteStatement
 	
 	static void fieldList() throws ParseException{// 21
-		if(inFollow(21))
+		if(!inFirst(16))
 			return;
 		fieldNames.clear();
 		checkToken("(");

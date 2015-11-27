@@ -59,7 +59,7 @@ public class LexicalAnalyzer{
 			}
 			
 			while(inString){
-				if((int)input[i] == 39){
+				if((int)input[i] == 39){ // single quote
 					output.append("CHARACTER_CONSTANT " + (new String(token)).trim() + "\n");
 					inString = false;
 					i++;//skip the single quote on next iteration

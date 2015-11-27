@@ -136,13 +136,30 @@ public class Table implements Serializable
 		return false;
 	}
 
+	/**
+	 * Returns the column with the specified name
+	 * @param name the name of the column to find
+	 * @return the column with the specified name
+	 */
+	private Column findColumn(String name) {
+		Column c = first;
+		while (c != null) {
+			if (c.getName().equalsIgnoreCase(name))
+				return c;
+			c = c.getNext();
+		}
+
+		return null;
+	}
+
 	
-	public boolean insert(boolean wInsert)
+	public boolean insert()
 	{
 
-		//wSelect boolean 
-		return false;	
+		return false;
 	}
+
+	// TODO wInsert
 
 
 	public boolean delete()

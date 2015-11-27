@@ -51,4 +51,42 @@ public class ParserTest {
         }
     }
 
+    @Test
+    public void testBadSelect() {
+        try {
+            Parser.parse("SELECT ** From table;");
+            assertEquals(false, true); // should fail
+        } catch (ParseException pex) {
+            assertEquals(true, true); // should fail
+        }
+    }
+
+    @Test
+    public void testInsert() {
+        try {
+            Parser.parse("INSERT INTO table VALUES ('hello', 'there', 56, 06/06/94);");
+        } catch (ParseException pex) {
+            assertEquals(false, true);
+        }
+    }
+
+    @Test
+    public void testInsertBad() {
+        try {
+            Parser.parse("INSERT INTO table VALUES ('hello, 'there', 56, 06/06/94);"); // missing single quote after hello
+            assertEquals(false, true);
+        } catch (ParseException pex) {
+            assertEquals(true, true);
+        }
+    }
+
+    @Test
+    public void testInsertCertainColumns() {
+        try {
+            Parser.parse("INSERT INTO table (eno, name, age) VALUES (67, 89, 'hi', 'ok');"); // missing single quote after hello
+            assertEquals(true, true);
+        } catch (ParseException pex) {
+            assertEquals(false, true);
+        }
+    }
 }
