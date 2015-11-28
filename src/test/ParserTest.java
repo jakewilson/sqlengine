@@ -293,6 +293,8 @@ public class ParserTest {
         try {
             Command c = Parser.parse("DROP DATABASE this;");
             assertEquals(CommandType.DELETE_DB, c.getType());
+            assertEquals("this", c.getSubject());
+            assertEquals(null, c.getColumn());
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
             fail();
@@ -304,6 +306,8 @@ public class ParserTest {
         try {
             Command c = Parser.parse("dRop dataBASE next;");
             assertEquals(CommandType.DELETE_DB, c.getType());
+            assertEquals("next", c.getSubject());
+            assertEquals(null, c.getColumn());
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
             fail();
@@ -319,6 +323,51 @@ public class ParserTest {
         }
     }
 
+    @Test
+    public void testDropTable() {
+        try {
+            Command c = Parser.parse("DROP TABLE newtable;");
+            assertEquals(CommandType.DROP_TABLE, c.getType());
+            assertEquals("newtable", c.getSubject());
+            assertEquals(null, c.getColumn());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
 
+    @Test
+    public void testDropTableCaseInsensitive() {
+        try {
+            Command c = Parser.parse("dRop tabLE secondtable;");
+            assertEquals(CommandType.DROP_TABLE, c.getType());
+            assertEquals("secondtable", c.getSubject());
+            assertEquals(null, c.getColumn());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testDropTableBad() {
+        try {
+            Command c = Parser.parse("DROP table");
+            fail();
+        } catch (ParseException pex) {
+        }
+    }
+
+    @Test
+    public void testWSelect() {
+        try {
+            Command c = Parser.parse("WSELECT * FROM selection;");
+            assertEquals(CommandType.WSELECT, c.getType());
+            assertEquals("selection", c.getSubject());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
 
 }

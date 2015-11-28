@@ -47,7 +47,7 @@ public class Parser {
 			{"NAME"},
 			{","},	
 			{"WUPDATE"},
-			{"SELECT"},
+			{"SELECT"}, // 38
 			{"WSELECT"},
 			{"NAME", "*"}
 	};
@@ -160,10 +160,8 @@ public class Parser {
 			update();
 		else if(inFirst(37))
 			wUpdate();
-		else if(inFirst(38))
+		else if(inFirst(38) || inFirst(39))
 			select();
-		else if(inFirst(39))
-			wSelect();
 		return;
 	}//command
 	
@@ -349,8 +347,7 @@ public class Parser {
 	
 	static void dropTable() throws ParseException{// 19
 		checkToken("TABLE");
-		checkToken("NAME");
-		String tableName = getLastValue();
+		String tableName = getToken(line++);
 		command = new DDLCommand(CommandType.DROP_TABLE, tableName);
 		checkToken(";");
 		return;
@@ -572,12 +569,16 @@ public class Parser {
 	}//deleteStatement
 
 	static void select() throws ParseException{// 38
-		checkToken("SELECT");
+		CommandType type = CommandType.SELECT;
+		if (getToken(line).equalsIgnoreCase("WSELECT"))
+			type = CommandType.WSELECT;
+
+		checkToken(getToken(line));
 		selectParams();
 		checkToken("FROM");
 		String tableName = getToken(line++);
 		where();
-		command = new DMLCommand(CommandType.SELECT, tableName);//TODO Add params
+		command = new DMLCommand(type, tableName);//TODO Add params
 		((DMLCommand)command).setColumnNames(fieldNames);
 		((DMLCommand)command).allColumns = allColumns;
 		allColumns = false;

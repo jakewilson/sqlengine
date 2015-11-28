@@ -55,5 +55,6 @@ enum CommandType {
     INSERT,
     UPDATE,
     DELETE,
-    SELECT
+    SELECT,
+    WSELECT
 }
