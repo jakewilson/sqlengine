@@ -7,37 +7,38 @@ public class CommandProcessor {
 
     private Database current;
 
-
-
     public CommandProcessor(Database current) {
         this.current = current;
     }
 
     public String execute(Command c) {
+        if (c.isDML())
+            return executeDML((DMLCommand)c);
+        else
+            return executeDDL((DDLCommand)c);
+    }
+
+    private String executeDML(DMLCommand c) {
+        Table t = current.getTable(c.getSubject());
+        ArrayList<String> names = c.getColumnNames();
         switch (c.getType()) {
             case SELECT:
-                Table t = current.getTable(c.getSubject());
-                ArrayList<String> names = ((DMLCommand)c).getColumnNames();
-                if (names.isEmpty() && ((DMLCommand) c).allColumns) {
-                    // add all column names if the query was SELECT *
-                    Column col = t.getFirst();
-                    while (col != null) {
-                        names.add(col.getName());
-                        col = col.getNext();
-                    }
-                }
+                if (names.isEmpty() && c.allColumns)
+                    names = t.getColumnNames();
 
                 return t.select(names);
-            case CREATE_TABLE:
-                break;
-
-            case CREATE_DB:
-                break;
 
             case INSERT:
-                break;
+                if (names.isEmpty())
+                    names = t.getColumnNames();
+
+                return t.insert(names, c.getInsertionValues());
         }
 
+        return ""; // TODO
+    }
+
+    private String executeDDL(DDLCommand c) {
         return ""; // TODO
     }
 

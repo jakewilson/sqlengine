@@ -129,7 +129,8 @@ public class Parser {
 
 		line = 0;
 		column = null;
-		
+		fieldNames.clear();
+
 		printTokens();//debug
 		
 		commands();//Start state
@@ -385,7 +386,7 @@ public class Parser {
 	}
 	
 	static void fields() throws ParseException{// 22
-		fieldNames.add(getToken(line++));
+		fieldNames.add(getToken(line++).toLowerCase());
 	}
 	
 	static void nextField() throws ParseException{// 23
@@ -604,8 +605,10 @@ public class Parser {
 			line++;
 			return;
 		}
-		else
+		else {
+			allColumns = false;
 			fieldList();
+		}
 
 		return;
 	}//deleteStatement

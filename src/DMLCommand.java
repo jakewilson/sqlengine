@@ -53,4 +53,8 @@ public class DMLCommand extends Command {
         return insertionValues;
     }
 
+    public boolean isDML() {
+        return true;
+    }
+
 }

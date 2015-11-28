@@ -28,4 +28,7 @@ public class DDLCommand extends Command {
         return null;
     }
 
+    public boolean isDML() {
+        return false;
+    }
 }

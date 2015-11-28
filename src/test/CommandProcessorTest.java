@@ -2,6 +2,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class CommandProcessorTest {
@@ -80,6 +82,44 @@ public class CommandProcessorTest {
             assertEquals(expectedResult, actual);
         } catch (ParseException pex) {
             assertEquals(false, true);
+        }
+    }
+
+    @Test
+    public void testInsert() {
+        try {
+            CommandProcessor cp = new CommandProcessor(d);
+            String actual = cp.execute(Parser.parse("INSERT INTO employee VALUES (2, 'Joe', 92, 05/21/93);"));
+            assertEquals("\n", actual);
+
+            actual = cp.execute(Parser.parse("SELECT * FROM employee;"));
+            String expected = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
+            expected += "2 | Joe | 92 | 05/21/93\n";
+            assertEquals(expected, actual);
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testInsertCertainColumns() {
+        try {
+            CommandProcessor cp = new CommandProcessor(d);
+            String actual = cp.execute(Parser.parse("INSERT INTO employee (eno, age) VALUES (2, 92);"));
+            assertEquals("\n", actual);
+
+            DMLCommand c = (DMLCommand)Parser.parse("SELECT * FROM employee;");
+            ArrayList<String> names = c.getColumnNames();
+            for (String s : names)
+                System.out.println(s);
+            actual = cp.execute(c);
+            String expected = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
+            expected += "2 | null | 92 | null\n";
+            assertEquals(expected, actual);
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
         }
     }
 }

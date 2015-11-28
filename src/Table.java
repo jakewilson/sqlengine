@@ -137,6 +137,21 @@ public class Table implements Serializable
 	}
 
 	/**
+	 * Returns the names of all columns in an array list
+	 * @return the names of all columns in an array list
+	 */
+	public ArrayList<String> getColumnNames() {
+		ArrayList<String> names = new ArrayList<String>();
+		Column c = first;
+		while (c != null) {
+			names.add(c.getName());
+			c = c.getNext();
+		}
+
+		return names;
+	}
+
+	/**
 	 * Returns the column with the specified name
 	 * @param name the name of the column to find
 	 * @return the column with the specified name
@@ -157,6 +172,18 @@ public class Table implements Serializable
 	{
 		if (columnNames.size() != values.size())
 			return "ERROR: Wrong number of values\n";
+
+		ArrayList<String> allNames = getColumnNames();
+
+		for (int i = 0; i < columnNames.size(); i++)
+			columnNames.set(i, columnNames.get(i).toLowerCase());
+
+		for (String s : allNames) {
+			if (!columnNames.contains(s.toLowerCase())) {
+				columnNames.add(s.toLowerCase());
+				values.add(null);
+			}
+		}
 
 
 		Record r = new Record();
