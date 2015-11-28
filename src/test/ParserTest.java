@@ -202,4 +202,27 @@ public class ParserTest {
             fail();
         }
     }
+
+    @Test
+    public void testLoadDatabase() {
+        try {
+            Command c = Parser.parse("LOAD DATABASE db;");
+            assertEquals(CommandType.LOAD_DB, c.getType());
+            assertEquals("db", c.getSubject());
+            assertEquals(null, c.getColumn());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testLoadDatabaseBad() {
+        try {
+            Command c = Parser.parse("LOAD DATABASE");
+        } catch (ParseException pex) {
+            assertEquals("Syntax Error\n", pex.getMessage());
+        }
+    }
+
 }

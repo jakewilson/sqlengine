@@ -199,7 +199,7 @@ public class Parser {
 	static void database(boolean createCommand) throws ParseException{// 5
 		checkToken("DATABASE");
 
-		String DBName = input[line++];
+		String DBName = getToken(line++);
 
 		if(createCommand)
 			command = new DDLCommand(CommandType.CREATE_DB, DBName);
@@ -211,7 +211,7 @@ public class Parser {
 	}//deleteStatement
 	
 	static void save() throws ParseException{// 6
-		if(input[line].equals("SAVE") || input[line].equals("COMMIT")){//I did not use the checkToken method here because either SAVE or COMMIT is valid
+		if(getToken(line).equals("SAVE") || getToken(line).equals("COMMIT")){//I did not use the checkToken method here because either SAVE or COMMIT is valid
 			line++;
 			command = new DDLCommand(CommandType.SAVE_DB);
 			checkToken(";");
@@ -224,9 +224,8 @@ public class Parser {
 	static void load() throws ParseException{// 7
 		checkToken("LOAD");
 		checkToken("DATABASE");
-		checkToken("NAME");
-		
-		String DBName = getLastValue();
+
+		String DBName = getToken(line++);
 
 		command = new DDLCommand(CommandType.LOAD_DB, DBName);
 		
@@ -237,7 +236,7 @@ public class Parser {
 	static void createTable() throws ParseException{// 8
 		checkToken("TABLE");
 
-		String tableName = input[line++];
+		String tableName = getToken(line++);
 
 		checkToken("(");
 		fieldDefList();
@@ -257,7 +256,7 @@ public class Parser {
 	}//deleteStatement
 
 	static void parseColumn() throws ParseException {
-		columnName = input[line++];
+		columnName = getToken(line++);
 
 		type();
 		constraints();
@@ -329,7 +328,7 @@ public class Parser {
 	}//deleteStatement
 	
 	static void param2B() throws ParseException{// 17
-		if(input[line].equals(")")){
+		if(getToken(line).equals(")")){
 			line++;
 			return;
 		}
@@ -360,7 +359,7 @@ public class Parser {
 	static void insert() throws ParseException{// 20
 		checkToken("INSERT");
 		checkToken("INTO");
-		String tableName = input[line++];
+		String tableName = getToken(line++);
 		fieldList();
 		checkToken("VALUES");
 		checkToken("(");
@@ -389,7 +388,7 @@ public class Parser {
 	}
 	
 	static void fields() throws ParseException{// 22
-		fieldNames.add(input[line++]);
+		fieldNames.add(getToken(line++));
 	}
 	
 	static void nextField() throws ParseException{// 23
@@ -408,14 +407,14 @@ public class Parser {
 	
 	static void literal() throws ParseException{// 25
 		String currentToken = null;
-		StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
+		StringTokenizer tokenizer = new StringTokenizer(getToken(line), " ");
 
-		if(input[line].contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
+		if(getToken(line).contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
 			currentToken = tokenizer.nextToken();
 		}//if
 		
 		else
-			currentToken = input[line];
+			currentToken = getToken(line);
 		
 		if  (currentToken.equals("INTEGER_CONSTANT") ||
 			(currentToken.equals("NUMBER_CONSTANT"))    ||
@@ -471,17 +470,17 @@ public class Parser {
 	}//deleteStatement
 	
 	static void relop() throws ParseException{// 30
-		if(input[line].equals("="))
+		if(getToken(line).equals("="))
 			line++;
-		else if(input[line].equals("<"))
+		else if(getToken(line).equals("<"))
 			line++;
-		else if(input[line].equals(">"))
+		else if(getToken(line).equals(">"))
 			line++;
-		else if(input[line].equals("<="))
+		else if(getToken(line).equals("<="))
 			line++;
-		else if(input[line].equals(">="))
+		else if(getToken(line).equals(">="))
 			line++;
-		else if(input[line].equals("<>"))
+		else if(getToken(line).equals("<>"))
 			line++;
 		else
 			reject();
@@ -491,13 +490,13 @@ public class Parser {
 	static void operand() throws ParseException{// 31
 		String currentToken = null;
 		
-		if(input[line].contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
-			StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
+		if(getToken(line).contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
+			StringTokenizer tokenizer = new StringTokenizer(getToken(line), " ");
 			currentToken = tokenizer.nextToken();
 		}//if
 		
 		else
-			currentToken = input[line];
+			currentToken = getToken(line);
 		
 		if(currentToken.equals("INTEGER_CONSTANT"))
 			line++;
@@ -517,9 +516,9 @@ public class Parser {
 	static void conditionList() throws ParseException{// 32
 		if(inFollow(32))
 			return;
-		if(input[line].equals("OR"))
+		if(getToken(line).equals("OR"))
 			line++;
-		else if(input[line].equals("AND"))
+		else if(getToken(line).equals("AND"))
 			line++;
 		else
 			reject();
@@ -576,7 +575,7 @@ public class Parser {
 		checkToken("SELECT");
 		selectParams();
 		checkToken("FROM");
-		String tableName = input[line++];
+		String tableName = getToken(line++);
 		where();
 		command = new DMLCommand(CommandType.SELECT, tableName);//TODO Add params
 		((DMLCommand)command).setColumnNames(fieldNames);
@@ -599,7 +598,7 @@ public class Parser {
 	}//deleteStatement
 	
 	static void selectParams() throws ParseException{// 40
-		if(input[line].equals("*")){
+		if(getToken(line).equals("*")){
 			allColumns = true;
 			line++;
 			return;
@@ -616,16 +615,16 @@ public class Parser {
 	 * --------------------------------------
 	 */	
 	
-	private static boolean inFirst(int nonTerminal){//returns true if the current token is in the first set of the given non-terminal
+	private static boolean inFirst(int nonTerminal) throws ParseException {//returns true if the current token is in the first set of the given non-terminal
 		String valueToCheck = null;
 		
-		if(input[line].contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
-			StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
+		if(getToken(line).contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
+			StringTokenizer tokenizer = new StringTokenizer(getToken(line), " ");
 			valueToCheck = tokenizer.nextToken();
 		}//if
 		
 		else
-			valueToCheck = input[line];
+			valueToCheck = getToken(line);
 		
 		for(int i = 0; i < firstSets[nonTerminal].length; i++){
 			if(firstSets[nonTerminal][i].equalsIgnoreCase(valueToCheck))
@@ -635,16 +634,16 @@ public class Parser {
 		return false;
 	}//inFirst
 	
-	private static boolean inFollow(int nonTerminal){//returns true if the current token is in the follow set of the given non-terminal
+	private static boolean inFollow(int nonTerminal) throws ParseException {//returns true if the current token is in the follow set of the given non-terminal
 		String valueToCheck = null;
 		
-		if(input[line].contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
-			StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
+		if(getToken(line).contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
+			StringTokenizer tokenizer = new StringTokenizer(getToken(line), " ");
 			valueToCheck = tokenizer.nextToken();
 		}//if
 		
 		else
-			valueToCheck = input[line];
+			valueToCheck = getToken(line);
 		
 		for(int i = 0; i < followSets[nonTerminal].length; i++){
 			if(followSets[nonTerminal][i].equalsIgnoreCase(valueToCheck))
@@ -684,13 +683,13 @@ public class Parser {
 		if (line >= input.length)
 			throw new ParseException("expected '"+ expectedValue + "'");
 		
-		if(input[line].contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
-			StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
+		if(getToken(line).contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
+			StringTokenizer tokenizer = new StringTokenizer(getToken(line), " ");
 			valueToCheck = tokenizer.nextToken();
 		}//if
 		
 		else
-			valueToCheck = input[line];
+			valueToCheck = getToken(line);
 		
 		if(valueToCheck.equalsIgnoreCase(expectedValue))
 			line++;
@@ -700,11 +699,11 @@ public class Parser {
 		return;
 	}//checkToken
 
-	private static String getLastValue(){//returns the value of the last token
+	private static String getLastValue() throws ParseException {//returns the value of the last token
 		StringBuilder output = new StringBuilder();
 		
-		if(input[line-1].contains(" ")){//This is for tokens with labels
-			StringTokenizer tokenizer = new StringTokenizer(input[line-1], " ");
+		if(getToken(line - 1).contains(" ")){//This is for tokens with labels
+			StringTokenizer tokenizer = new StringTokenizer(getToken(line - 1), " ");
 			tokenizer.nextToken();//skip the token label
 			
 			for(int i = 1; i <= tokenizer.countTokens(); i++)
@@ -712,7 +711,7 @@ public class Parser {
 		}//if
 		
 		else
-			output.append(input[line-1]);
+			output.append(getToken(line - 1));
 		
 		return output.toString();
 	}//getLastCharacterSequence
@@ -758,5 +757,11 @@ public class Parser {
 			System.out.println("Error determining type " + lastType);
 		return;
 	}//setFieldType
-	
+
+	private static String getToken(int line) throws ParseException {
+		if (line < 0 || line >= input.length)
+			throw new ParseException("Syntax Error\n");
+
+		return input[line];
+	}
 }//class Parser
