@@ -760,7 +760,7 @@ public class Parser {
 
 	private static String getToken(int line) throws ParseException {
 		if (line < 0 || line >= input.length)
-			throw new ParseException("Syntax Error\n");
+			throw new ParseException();
 
 		return input[line];
 	}

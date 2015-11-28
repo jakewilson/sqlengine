@@ -11,7 +11,7 @@ public class ParseException extends Exception {
 	}
 
 	public ParseException() {
-		super("no message provided");
+		super("Syntax Error occurred.\n");
 	}
 	
 }

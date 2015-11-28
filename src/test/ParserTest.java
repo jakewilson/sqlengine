@@ -221,7 +221,7 @@ public class ParserTest {
         try {
             Command c = Parser.parse("LOAD DATABASE");
         } catch (ParseException pex) {
-            assertEquals("Syntax Error\n", pex.getMessage());
+            assertEquals("Syntax Error occurred.\n", pex.getMessage());
         }
     }
 
