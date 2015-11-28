@@ -33,8 +33,16 @@ public class DatabaseTest {
     @Test
     public void testGetName() throws Exception{
         Database d = new Database("test");
-        assertEquals("test",d.getName());
+        assertEquals("test", d.getName());
+    }
 
+    @Test
+    public void testGetTable() {
+        Database d = new Database("testdatabase");
+        Column c = new Column("Column",new FieldType(Type.NUMBER),false);
+        d.createTable("btable",c);
+        assertNotEquals(null, d.getTable("btable"));
+        assertEquals(null, d.getTable("random"));
     }
 }
 

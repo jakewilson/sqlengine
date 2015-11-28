@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 public class CommandProcessorTest {
 
-
+    private Catalog c;
     private Database d;
     private Table t;
 
@@ -20,7 +20,7 @@ public class CommandProcessorTest {
     @Before
     public void setUp() {
 
-        d = new Database("Work");
+        c = new Catalog();
         eno  = new Column("ENO", new FieldType(Type.INTEGER, 3), true);
         name = new Column("Name", new FieldType(Type.CHARACTER, 15), false);
         age  = new Column("Age", new FieldType(Type.INTEGER, 3), false);
@@ -30,6 +30,8 @@ public class CommandProcessorTest {
         name.setNext(age);
         age.setNext(bday);
 
+        c.createDatabase("Work");
+        d = c.getCurrent();
         d.createTable("Employee", eno);
         t = d.getTable("Employee");
     }
@@ -46,7 +48,7 @@ public class CommandProcessorTest {
             t.addRecord(r);
             String expectedResult = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
             expectedResult += "0 | Jake | 22 | 6/6/94\n";
-            CommandProcessor cp = new CommandProcessor(d);
+            CommandProcessor cp = new CommandProcessor(c);
             String actual = cp.execute(Parser.parse("SELECT * FROM Employee;"));
             assertEquals(expectedResult, actual);
         } catch (ParseException pex) {
@@ -77,7 +79,7 @@ public class CommandProcessorTest {
             expectedResult += "6/6/94 | Jake | 22\n";
             expectedResult += "9/22/87 | MArtino | 87\n";
 
-            CommandProcessor cp = new CommandProcessor(d);
+            CommandProcessor cp = new CommandProcessor(c);
             String actual = cp.execute(Parser.parse("SELECT (birthdate, name, age) FROM Employee;"));
             assertEquals(expectedResult, actual);
         } catch (ParseException pex) {
@@ -88,7 +90,7 @@ public class CommandProcessorTest {
     @Test
     public void testInsert() {
         try {
-            CommandProcessor cp = new CommandProcessor(d);
+            CommandProcessor cp = new CommandProcessor(c);
             String actual = cp.execute(Parser.parse("INSERT INTO employee VALUES (2, 'Joe', 92, 05/21/93);"));
             assertEquals("\n", actual);
 
@@ -105,7 +107,7 @@ public class CommandProcessorTest {
     @Test
     public void testInsertCertainColumns() {
         try {
-            CommandProcessor cp = new CommandProcessor(d);
+            CommandProcessor cp = new CommandProcessor(c);
             String actual = cp.execute(Parser.parse("INSERT INTO employee (eno, age) VALUES (2, 92);"));
             assertEquals("\n", actual);
 
@@ -117,6 +119,30 @@ public class CommandProcessorTest {
             String expected = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
             expected += "2 | null | 92 | null\n";
             assertEquals(expected, actual);
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testCreateDatabase() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("\n", cp.execute(Parser.parse("CREATE DATABASE joe;")));
+            assertEquals(true, c.loadDatabase("joe"));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testCreateTable() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("\n", cp.execute(Parser.parse("CREATE TABLE atable (tabNum INTEGER NOT NULL, firstName CHARACTER(15));")));
+            assertNotEquals(null, c.getCurrent().getTable("atable"));
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
             fail();

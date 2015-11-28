@@ -5,10 +5,10 @@ import java.util.ArrayList;
  */
 public class CommandProcessor {
 
-    private Database current;
+    private Catalog catalog;
 
-    public CommandProcessor(Database current) {
-        this.current = current;
+    public CommandProcessor(Catalog catalog) {
+        this.catalog = catalog;
     }
 
     public String execute(Command c) {
@@ -19,7 +19,7 @@ public class CommandProcessor {
     }
 
     private String executeDML(DMLCommand c) {
-        Table t = current.getTable(c.getSubject());
+        Table t = catalog.getCurrent().getTable(c.getSubject());
         ArrayList<String> names = c.getColumnNames();
         switch (c.getType()) {
             case SELECT:
@@ -39,7 +39,18 @@ public class CommandProcessor {
     }
 
     private String executeDDL(DDLCommand c) {
-        return ""; // TODO
+        String subject = c.getSubject();
+        switch (c.getType()) {
+            case CREATE_TABLE:
+                catalog.getCurrent().createTable(subject, c.getColumn());
+                break;
+
+            case CREATE_DB:
+                catalog.createDatabase(subject);
+                break;
+        }
+
+        return "\n"; // TODO
     }
 
 }
