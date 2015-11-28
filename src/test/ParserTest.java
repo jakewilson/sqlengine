@@ -225,4 +225,65 @@ public class ParserTest {
         }
     }
 
+    @Test
+    public void testSave() {
+        try {
+            Command c = Parser.parse("SAVE;");
+            assertEquals(CommandType.SAVE_DB, c.getType());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+
+    @Test
+    public void testSaveCaseInsensitive() {
+        try {
+            Command c = Parser.parse("sAvE;");
+            assertEquals(CommandType.SAVE_DB, c.getType());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testSaveBad() {
+        try {
+            Command c = Parser.parse("SAVE");
+            fail();
+        } catch (ParseException pex) {
+        }
+    }
+
+    @Test
+    public void testCommit() {
+        try {
+            Command c = Parser.parse("COMMIT;");
+            assertEquals(CommandType.SAVE_DB, c.getType());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testCommitCaseInsensitive() {
+        try {
+            Command c = Parser.parse("cOMMit;");
+            assertEquals(CommandType.SAVE_DB, c.getType());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+    @Test
+    public void testCommitBad() {
+        try {
+            Command c = Parser.parse("COMMIT");
+            fail();
+        } catch (ParseException pex) {
+        }
+    }
 }

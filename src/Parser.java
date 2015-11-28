@@ -211,7 +211,7 @@ public class Parser {
 	}//deleteStatement
 	
 	static void save() throws ParseException{// 6
-		if(getToken(line).equals("SAVE") || getToken(line).equals("COMMIT")){//I did not use the checkToken method here because either SAVE or COMMIT is valid
+		if(getToken(line).equalsIgnoreCase("SAVE") || getToken(line).equalsIgnoreCase("COMMIT")){//I did not use the checkToken method here because either SAVE or COMMIT is valid
 			line++;
 			command = new DDLCommand(CommandType.SAVE_DB);
 			checkToken(";");
