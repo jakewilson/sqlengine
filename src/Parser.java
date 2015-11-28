@@ -116,23 +116,6 @@ public class Parser {
 	static int scale;
 	static int precision;
 	
-	/*public static void main(String[] args){		//----This method is for testing only and will not appear in the final version----
-		if(args.length == 0){
-			System.err.println("No arguments given.");
-			return;
-		}//if no args given
-		try{
-			parse(args[0]);							//----This method is for testing only and will not appear in the final version----
-		}
-		catch(ParseException e){
-			e.printStackTrace();
-			System.out.println("\nREJECT");
-			return;
-		}
-		System.out.println("\nACCEPT");
-		return;
-	}//main*/										//----This method is for testing only and will not appear in the final version----
-	
 	/**
 	 * Tokenizes the command input string and performs an LL(1) parse using a grammar for wSQLx (listed in Grammar.txt)
 	 * @param inputString the string to be parsed
@@ -145,6 +128,7 @@ public class Parser {
 			throw new ParseException("bad input");
 
 		line = 0;
+		column = null;
 		
 		printTokens();//debug
 		
@@ -214,9 +198,9 @@ public class Parser {
 	
 	static void database(boolean createCommand) throws ParseException{// 5
 		checkToken("DATABASE");
-		checkToken("NAME");
-		
-		String DBName = getLastValue();
+
+		String DBName = input[line++];
+
 		if(createCommand)
 			command = new DDLCommand(CommandType.CREATE_DB, DBName);
 		else
@@ -252,36 +236,39 @@ public class Parser {
 	
 	static void createTable() throws ParseException{// 8
 		checkToken("TABLE");
-		checkToken("NAME");
-		
-		String tableName = getLastValue();
-		
-		fieldDef();
+
+		String tableName = input[line++];
+
+		checkToken("(");
+		fieldDefList();
+		checkToken(")");
 		command = new DDLCommand(CommandType.CREATE_TABLE, tableName, column);
 		checkToken(";");
 		return;
 	}//deleteStatement
 	
 	static void fieldDefList() throws ParseException{// 9
-		if(inFollow(9))
-			return;
-		checkToken(",");
-		fieldDef();
+		parseColumn();
+		while (inFirst(23)) {
+			line++;
+			parseColumn();
+		}
 		return;
 	}//deleteStatement
-	
-	static void fieldDef() throws ParseException{// 10
-		checkToken("NAME");
-		
-		columnName = getLastValue();
-		
+
+	static void parseColumn() throws ParseException {
+		columnName = input[line++];
+
 		type();
 		constraints();
 		if(getLastValue().equals("NULL"))
 			notNull = true;
-		
+
 		appendColumn();
-		
+	}
+	
+	static void fieldDef() throws ParseException{// 10
+
 		fieldDefList();
 		return;
 	}//deleteStatement
@@ -319,7 +306,7 @@ public class Parser {
 			return;
 		checkToken("(");
 		checkToken("INTEGER_CONSTANT");
-		scale = Integer.parseInt(getLastValue());
+		precision = Integer.parseInt(getLastValue());
 		checkToken(")");
 		return;
 	}//deleteStatement
@@ -336,7 +323,7 @@ public class Parser {
 			return;
 		checkToken("(");
 		checkToken("INTEGER_CONSTANT");
-		scale = Integer.parseInt(getLastValue());
+		precision = Integer.parseInt(getLastValue());
 		param2B();
 		return;
 	}//deleteStatement
@@ -348,7 +335,8 @@ public class Parser {
 		}
 		checkToken(",");
 		checkToken("INTEGER_CONSTANT");
-		precision = Integer.parseInt(getLastValue());
+		scale = Integer.parseInt(getLastValue());
+		checkToken(")");
 		return;
 	}//deleteStatement
 	
@@ -670,7 +658,7 @@ public class Parser {
 			for(int i = 0; i < input.length; i++)
 				System.out.println(input[i]);
 	}//printInput
-	
+
 	private static String formatDate(String dateToken){//converts date string from "DATE MM DD YY[YY]" to "MM/DD/[YY]YY"
 		StringBuilder formattedString = new StringBuilder();
 		StringTokenizer tokenizer = new StringTokenizer(dateToken, " ");
@@ -678,10 +666,10 @@ public class Parser {
 		formattedString.append(tokenizer.nextToken() + "/");// MM/
 		formattedString.append(tokenizer.nextToken() + "/");// MM/DD/
 		formattedString.append(tokenizer.nextToken());		// MM/DD/[YY]YY
-		
+
 		return formattedString.toString();
 	}//formatDate
-	
+
 	private static void reject() throws ParseException{
 		throw new ParseException();
 	}//reject
@@ -689,9 +677,12 @@ public class Parser {
 	private static void reject(String expected, String actual) throws ParseException {
 		throw new ParseException("Expected: " + expected + " actual: " + actual);
 	}
-	
+
 	private static void checkToken(String expectedValue) throws ParseException{
 		String valueToCheck = null;
+
+		if (line >= input.length)
+			throw new ParseException("expected '"+ expectedValue + "'");
 		
 		if(input[line].contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
 			StringTokenizer tokenizer = new StringTokenizer(input[line], " ");
@@ -716,7 +707,7 @@ public class Parser {
 			StringTokenizer tokenizer = new StringTokenizer(input[line-1], " ");
 			tokenizer.nextToken();//skip the token label
 			
-			for(int i = 1; i < tokenizer.countTokens(); i++)
+			for(int i = 1; i <= tokenizer.countTokens(); i++)
 				output.append(tokenizer.nextToken());
 		}//if
 		
@@ -750,15 +741,15 @@ public class Parser {
 		columnName = null;
 		dataType = null;
 		notNull = false;
-		precision = DEFAULT_PRECISION;
-		scale = DEFAULT_SCALE;
+		precision = FieldType.DEFAULT_PRECISION;
+		scale = FieldType.DEFAULT_SCALE;
 	}//resetColumnData
 	
 	private static void setFieldType(){//sets the class variable dataType according to other class variables
 		if(lastType.equals("CHARACTER"))
-			dataType = new FieldType(Type.CHARACTER, 0, scale);
+			dataType = new FieldType(Type.CHARACTER, precision);
 		else if(lastType.equals("INTEGER"))
-			dataType = new FieldType(Type.INTEGER, 0, scale);
+			dataType = new FieldType(Type.INTEGER, precision);
 		else if(lastType.equals("NUMBER"))
 			dataType = new FieldType(Type.NUMBER, precision, scale);
 		else if(lastType.equals("DATE"))

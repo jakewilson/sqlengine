@@ -18,14 +18,17 @@ public class FieldType implements Serializable {
     private int precision;
     private int scale;
 
+    public static final int DEFAULT_PRECISION = 5;
+    public static final int DEFAULT_SCALE     = 0;
+
     // TODO possibly add mm/dd/yyyy for dates ?
 
     public FieldType(Type type) {
-        this(type, 0);
+        this(type, DEFAULT_PRECISION);
     }
 
     public FieldType(Type type, int precision) {
-        this(type, precision, 0);
+        this(type, precision, DEFAULT_SCALE);
     }
 
     public FieldType(Type type, int precision, int scale) {

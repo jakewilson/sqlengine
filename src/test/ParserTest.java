@@ -106,5 +106,100 @@ public class ParserTest {
             System.out.println(pex.getMessage());
             assertEquals(false, true);
         }
+
+    }
+
+    @Test
+    public void testCreateDatabase() {
+        try {
+            DDLCommand c = (DDLCommand)Parser.parse("CREATE dAtaBase job;");
+            assertEquals(CommandType.CREATE_DB, c.getType());
+            assertEquals("job", c.getSubject());
+        } catch (ParseException pex) {
+            assertEquals(false, true);
+        }
+    }
+
+    @Test
+    public void testCreateDatabaseInvalid() {
+        try {
+            DDLCommand c = (DDLCommand)Parser.parse("CREATE dAtaBase job");
+            fail();
+        } catch (ParseException pex) {
+            assertEquals(true, true);
+        }
+    }
+
+    @Test
+    public void testCreateTable() {
+        try {
+            DDLCommand c = (DDLCommand)Parser.parse("CREATE table table(eno INTEGER(23));");
+            assertEquals(CommandType.CREATE_TABLE, c.getType());
+            assertEquals("table", c.getSubject());
+            Column col = c.getColumn();
+            assertEquals("eno", col.getName());
+            assertEquals(Type.INTEGER, col.getFieldType().getType());
+            assertEquals(23, col.getFieldType().getPrecision());
+        } catch (ParseException pex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testCreateTableMultipleParams() {
+        try {
+            DDLCommand c = (DDLCommand)Parser.parse("CREATE table table(eno1 INTEGER(15), name CHARACTER(10), age INTEGER);");
+            assertEquals(CommandType.CREATE_TABLE, c.getType());
+            assertEquals("table", c.getSubject());
+            Column col = c.getColumn();
+            assertEquals("eno1", col.getName());
+            assertEquals(Type.INTEGER, col.getFieldType().getType());
+            assertEquals(15, col.getFieldType().getPrecision());
+
+            col = col.getNext();
+            assertNotEquals(null, col);
+            assertEquals("name", col.getName());
+            assertEquals(Type.CHARACTER, col.getFieldType().getType());
+            assertEquals(10, col.getFieldType().getPrecision());
+
+            col = col.getNext();
+            assertNotEquals(null, col);
+            assertEquals("age", col.getName());
+            assertEquals(Type.INTEGER, col.getFieldType().getType());
+            assertEquals(5, col.getFieldType().getPrecision());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testCreateTableNumberAndDate() {
+        try {
+            DDLCommand c = (DDLCommand)Parser.parse("CREATE table employee (id INTEGER, salary NUMBER(10, 5), birthdate DATE);");
+            assertEquals(CommandType.CREATE_TABLE, c.getType());
+            assertEquals("employee", c.getSubject());
+
+            Column col = c.getColumn();
+            assertEquals("id", col.getName());
+            assertEquals(Type.INTEGER, col.getFieldType().getType());
+            assertEquals(FieldType.DEFAULT_PRECISION, col.getFieldType().getPrecision());
+
+            col = col.getNext();
+            assertNotEquals(null, col);
+            assertEquals("salary", col.getName());
+            assertEquals(Type.NUMBER, col.getFieldType().getType());
+            assertEquals(10, col.getFieldType().getPrecision());
+            assertEquals(5, col.getFieldType().getScale());
+
+            col = col.getNext();
+            assertNotEquals(null, col);
+            assertEquals("birthdate", col.getName());
+            assertEquals(Type.DATE, col.getFieldType().getType());
+            assertEquals(5, col.getFieldType().getPrecision());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
     }
 }

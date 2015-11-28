@@ -28,6 +28,14 @@ public class CommandProcessor {
                 }
 
                 return t.select(names);
+            case CREATE_TABLE:
+                break;
+
+            case CREATE_DB:
+                break;
+
+            case INSERT:
+                break;
         }
 
         return ""; // TODO

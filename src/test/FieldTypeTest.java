@@ -10,12 +10,15 @@ public class FieldTypeTest {
     public void testGetType() throws  Exception{
         FieldType ft = new FieldType(Type.INTEGER);
         assertEquals(Type.INTEGER,ft.getType());
+        assertEquals(FieldType.DEFAULT_PRECISION, ft.getPrecision());
+        assertEquals(FieldType.DEFAULT_SCALE, ft.getScale());
     }
     @Test
     public void testGetPrecision() throws Exception{
         FieldType ft1 = new FieldType(Type.NUMBER,2);
         assertEquals(Type.NUMBER,ft1.getType());
         assertEquals(2,ft1.getPrecision());
+        assertEquals(0, ft1.getScale());
     }
     @Test
     public void testGetScale() throws  Exception{
