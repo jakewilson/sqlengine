@@ -12,7 +12,7 @@ public class Parser {
 			{},
 			{"CREATE"},
 			{"TABLE", "DATABASE"},
-			{"TABLE", "DATABASE"},
+			{"DROP"},
 			{"DATABASE"},
 			{"DATABASE"},
 			{"SAVE", "COMMIT"},
@@ -205,7 +205,7 @@ public class Parser {
 			command = new DDLCommand(CommandType.CREATE_DB, DBName);
 		else
 			command = new DDLCommand(CommandType.DELETE_DB, DBName);
-		
+
 		checkToken(";");
 		return;
 	}//deleteStatement

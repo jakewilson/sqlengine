@@ -278,6 +278,7 @@ public class ParserTest {
             fail();
         }
     }
+
     @Test
     public void testCommitBad() {
         try {
@@ -286,4 +287,38 @@ public class ParserTest {
         } catch (ParseException pex) {
         }
     }
+
+    @Test
+    public void testDropDatabase() {
+        try {
+            Command c = Parser.parse("DROP DATABASE this;");
+            assertEquals(CommandType.DELETE_DB, c.getType());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testDropDatabaseCaseInsensitive() {
+        try {
+            Command c = Parser.parse("dRop dataBASE next;");
+            assertEquals(CommandType.DELETE_DB, c.getType());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testDropDatabaseBad() {
+        try {
+            Command c = Parser.parse("DROP DATABASE");
+            fail();
+        } catch (ParseException pex) {
+        }
+    }
+
+
+
 }
