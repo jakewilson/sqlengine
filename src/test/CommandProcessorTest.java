@@ -92,7 +92,7 @@ public class CommandProcessorTest {
         try {
             CommandProcessor cp = new CommandProcessor(c);
             String actual = cp.execute(Parser.parse("INSERT INTO employee VALUES (2, 'Joe', 92, 05/21/93);"));
-            assertEquals("\n", actual);
+            assertEquals("", actual);
 
             actual = cp.execute(Parser.parse("SELECT * FROM employee;"));
             String expected = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
@@ -109,7 +109,7 @@ public class CommandProcessorTest {
         try {
             CommandProcessor cp = new CommandProcessor(c);
             String actual = cp.execute(Parser.parse("INSERT INTO employee (eno, age) VALUES (2, 92);"));
-            assertEquals("\n", actual);
+            assertEquals("", actual);
 
             DMLCommand c = (DMLCommand)Parser.parse("SELECT * FROM employee;");
             ArrayList<String> names = c.getColumnNames();
@@ -129,7 +129,7 @@ public class CommandProcessorTest {
     public void testCreateDatabase() {
         try {
             CommandProcessor cp = new CommandProcessor(c);
-            assertEquals("\n", cp.execute(Parser.parse("CREATE DATABASE joe;")));
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE joe;")));
             assertEquals(true, c.loadDatabase("joe"));
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
@@ -141,8 +141,35 @@ public class CommandProcessorTest {
     public void testCreateTable() {
         try {
             CommandProcessor cp = new CommandProcessor(c);
-            assertEquals("\n", cp.execute(Parser.parse("CREATE TABLE atable (tabNum INTEGER NOT NULL, firstName CHARACTER(15));")));
+            assertEquals("", cp.execute(Parser.parse("CREATE TABLE atable (tabNum INTEGER NOT NULL, firstName CHARACTER(15));")));
             assertNotEquals(null, c.getCurrent().getTable("atable"));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testCreateTableInsertAndSelect() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("", cp.execute(Parser.parse("CREATE TABLE worker (wno INTEGER, name CHARACTER(25));")));
+            assertNotEquals(null, c.getCurrent().getTable("worker"));
+
+            Column col = c.getCurrent().getTable("worker").getFirst();
+            assertEquals("wno", col.getName());
+            assertEquals(FieldType.DEFAULT_PRECISION, col.getFieldType().getPrecision());
+            assertEquals(Type.INTEGER, col.getFieldType().getType());
+
+            col = col.getNext();
+            assertEquals("name", col.getName());
+            assertEquals(25, col.getFieldType().getPrecision());
+            assertEquals(Type.CHARACTER, col.getFieldType().getType());
+
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO worker VALUES (0, 'jakewilson');")));
+
+            String expected = "wno | name\n0 | jakewilson\n";
+            assertEquals(expected, cp.execute(Parser.parse("SELECT * FROM worker;")));
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
             fail();

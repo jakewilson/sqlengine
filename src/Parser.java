@@ -163,6 +163,8 @@ public class Parser {
 			wUpdate();
 		else if(inFirst(38) || inFirst(39))
 			select();
+		else
+			throw new ParseException("Unrecognized command: " + getToken(line));
 		return;
 	}//command
 	
@@ -678,7 +680,7 @@ public class Parser {
 	}//reject
 
 	private static void reject(String expected, String actual) throws ParseException {
-		throw new ParseException("Expected: " + expected + " actual: " + actual);
+		throw new ParseException("Syntax Error\nExpected: " + expected + " actual: " + actual);
 	}
 
 	private static void checkToken(String expectedValue) throws ParseException{

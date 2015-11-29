@@ -92,6 +92,9 @@ public class Table implements Serializable
 	{
 		String s = "";
 
+		if (this.records.isEmpty())
+			return "";
+
 		if(columnNames != null)
 		{
 			for(String name : columnNames)
@@ -191,13 +194,13 @@ public class Table implements Serializable
 
 		for (int i = 0; i < columnNames.size(); i++)
 			if (!(f[i] = new Field(findColumn(columnNames.get(i)))).setValue(values.get(i)))
-				return "ERROR: Wrong type: " + values.get(i) + "\n";
+				return "ERROR: Wrong type: " + values.get(i) + " for column '" + columnNames.get(i) + "'\n";
 
 		for (int i = 0; i < f.length; i++)
 			r.addField(f[i]);
 
 		this.addRecord(r);
-		return "\n";
+		return "";
 	}
 
 	// TODO wInsert

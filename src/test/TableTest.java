@@ -57,7 +57,7 @@ public class TableTest {
 
         String result = table.select(cols);
 
-        assertEquals(eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n", result);
+        assertEquals("", result);
     }
 
     @Test
@@ -134,7 +134,7 @@ public class TableTest {
         ArrayList<String> values = new ArrayList<String>();
         values.add("4"); values.add("Another"); values.add("12"); values.add("09/14/56");
 
-        assertEquals("\n", table.insert(columns, values));
+        assertEquals("", table.insert(columns, values));
 
         String expectedResult = eno.getName() + " | " + name.getName() + " | " + age.getName() + " | " + bday.getName() + "\n";
 
@@ -166,7 +166,7 @@ public class TableTest {
         ArrayList<String> values = new ArrayList<String>();
         values.add("4"); values.add("Another"); values.add("hello"); values.add("09/14/56");
 
-        assertEquals("ERROR: Wrong type: hello\n", table.insert(columns, values));
+        assertEquals("ERROR: Wrong type: hello for column 'age'\n", table.insert(columns, values));
     }
 
     @Test

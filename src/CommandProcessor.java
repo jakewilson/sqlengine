@@ -19,7 +19,14 @@ public class CommandProcessor {
     }
 
     private String executeDML(DMLCommand c) {
-        Table t = catalog.getCurrent().getTable(c.getSubject());
+        Database d = catalog.getCurrent();
+        if (d == null)
+            return "ERROR: No database selected.\n";
+        Table t = d.getTable(c.getSubject());
+
+        if (t == null)
+            return "ERROR: table '" + c.getSubject() + "' does not exist.\n";
+
         ArrayList<String> names = c.getColumnNames();
         switch (c.getType()) {
             case SELECT:
@@ -42,7 +49,10 @@ public class CommandProcessor {
         String subject = c.getSubject();
         switch (c.getType()) {
             case CREATE_TABLE:
-                catalog.getCurrent().createTable(subject, c.getColumn());
+                if (catalog.getCurrent() == null)
+                    return "ERROR: No database selected.\n";
+                if (!catalog.getCurrent().createTable(subject, c.getColumn()))
+                    return "ERROR: Table '" + subject + "' already exists.\n";
                 break;
 
             case CREATE_DB:
@@ -50,7 +60,7 @@ public class CommandProcessor {
                 break;
         }
 
-        return "\n"; // TODO
+        return ""; // TODO
     }
 
 }
