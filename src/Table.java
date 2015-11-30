@@ -103,7 +103,6 @@ public class Table implements Serializable
 				// only add the pipe if it's not the last column
 				s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
 			}
-
 			s += "\n";
 
 			for(Record r : this.records)
@@ -117,11 +116,10 @@ public class Table implements Serializable
 					// only add the pipe if it's not the last column
 					s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
 				}
-				s += "\n";
 			}
-			return s;
+			s += "\n";
 			
-			//TODO record names of all the columns
+			return s;
 		} else {
 			Column temp = this.first;
 			while(temp.getNext() != null)
@@ -133,6 +131,22 @@ public class Table implements Serializable
 				}
 				temp = temp.getNext();
 			}
+			s += "\n";
+			
+			for(Record r : this.records)
+			{
+				while(temp.getNext() != null)
+				{
+					Field f = r.getField(name);
+					if (f == null)
+						return "ERROR: Bad column name '" + name + "'.";
+					s += f.getValue();
+					// only add the pipe if it's not the last column
+					s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
+				}
+			}
+			s += "\n";
+			
 			return s;
 		}
 	}
