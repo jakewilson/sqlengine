@@ -1,18 +1,36 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Scanner;
 
 /**
  * Created by jakewilson on 11/28/15.
  */
-public class Prompt {
+public class WSql {
 
     private CommandProcessor processor;
     private Catalog catalog;
     private Scanner input;
 
-    public Prompt(String path) {
+    public WSql(String path) {
         // TODO load file if saved
         // create new catalog if not
-        catalog = new Catalog();
+        try {
+            FileInputStream fileIn = new FileInputStream(path);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            catalog = (Catalog) in.readObject();
+            catalog.setPath(path);
+            in.close();
+            fileIn.close();
+        } catch (FileNotFoundException fex) {
+            catalog = new Catalog(path);
+        } catch (IOException ioex) {
+            catalog = new Catalog(path);
+        } catch (ClassNotFoundException cnfex) {
+            catalog = new Catalog(path);
+        }
+
         processor = new CommandProcessor(catalog);
         input = new Scanner(System.in);
     }
@@ -34,13 +52,13 @@ public class Prompt {
 
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("Usage: ./wsql <filepath>");
+            System.out.println("Usage: ./wsql <filepath> [script]");
             return;
         }
 
         // TODO check if args[1] is there
-        Prompt p = new Prompt(args[0]);
-        while (p.promptUser());
+        WSql w = new WSql(args[0]);
+        while (w.promptUser());
     }
 
 }

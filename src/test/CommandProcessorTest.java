@@ -175,4 +175,42 @@ public class CommandProcessorTest {
             fail();
         }
     }
+
+    @Test
+    public void testLoadDatabase() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE martino;")));
+            assertEquals("", cp.execute(Parser.parse("LOAD DATABASE martino;")));
+            assertEquals("ERROR: database 'hello' does not exist.\n", cp.execute(Parser.parse("LOAD DATABASE hello;")));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testCreateAlreadyExistingDatabase() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE martino;")));
+            assertEquals("ERROR: database 'martino' already exists.\n", cp.execute(Parser.parse("CREATE DATABASE martino;")));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void insertCharacterIntoTable() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE martino;")));
+
+            assertEquals("ERROR: database 'martino' already exists.\n", cp.execute(Parser.parse("CREATE DATABASE martino;")));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
 }

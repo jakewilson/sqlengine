@@ -1,7 +1,7 @@
 import java.util.Hashtable;
 import java.io.*;
 
-public class Catalog
+public class Catalog implements Serializable
 {   
    private Hashtable<String, Database> databaseNames;
    private Database current;
@@ -61,6 +61,9 @@ public class Catalog
    {
       if (databaseNames.containsKey(name))
       {
+         if (current.equals(databaseNames.get(name)))
+            current = null;
+
          databaseNames.remove(name);
          return true;   
       }
@@ -84,6 +87,10 @@ public class Catalog
 
       return false;
    }
+
+   public void setPath(String fp) {
+      filePath = fp;
+   }
    
    
    /**
@@ -97,7 +104,7 @@ public class Catalog
       {
          FileOutputStream fileOut = new FileOutputStream(filePath);
          ObjectOutputStream out = new ObjectOutputStream(fileOut);
-         out.writeObject(current);
+         out.writeObject(this);
          out.close();
          fileOut.close();
       } catch (IOException i)

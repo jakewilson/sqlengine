@@ -4,10 +4,10 @@
  */
 public class Condition {
 
-    private String operand1, operand2;
-    private Operator operator;
+    public String operand1, operand2;
+    public Operator operator;
 
-    private LogicalOperator logicalOperator;
+    public LogicalOperator logicalOperator;
 
     private Condition next;
 

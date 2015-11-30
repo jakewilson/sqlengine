@@ -59,9 +59,11 @@ public class Field implements Serializable
 				try
 				{
 					Integer.parseInt(val);
-					if(val.length() <= ft.getPrecision())
+					if(val.length() <= ft.getPrecision()) {
 						return true;
-				} catch (NumberFormatException nfex) {}
+					}
+				} catch (NumberFormatException nfex) {
+				}
 				return false;
 
 			case NUMBER:
@@ -107,6 +109,9 @@ public class Field implements Serializable
 		int slash = date.indexOf('/');
 		try
 		{
+			if (slash < 0)
+				return false;
+
 			int month = Integer.parseInt(date.substring(0, slash));
 			if (month < 1 || month > 12)
 				return false;

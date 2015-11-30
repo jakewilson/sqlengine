@@ -370,4 +370,58 @@ public class ParserTest {
         }
     }
 
+    @Test
+    public void testUpdate() {
+        try {
+            Command c = Parser.parse("UPDATE table SET col = 5;");
+            assertEquals(CommandType.UPDATE, c.getType());
+            assertEquals("table", c.getSubject());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testDelete() {
+        try {
+            Command c = Parser.parse("DELETE FROM ok;");
+            assertEquals(CommandType.DELETE, c.getType());
+            assertEquals("ok", c.getSubject());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+
+    @Test
+    public void testUpdateWithCondition() {
+        try {
+            DMLCommand c = (DMLCommand)Parser.parse("UPDATE ok SET col3 = 16 WHERE col = col2;");
+            assertEquals(CommandType.UPDATE, c.getType());
+            assertEquals("ok", c.getSubject());
+            assertEquals(Operator.EQUAL_TO, c.getCondition().operator);
+            assertEquals("col", c.getCondition().operand1);
+            assertEquals("col2", c.getCondition().operand2);
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testDeleteWithCondition() {
+        try {
+            DMLCommand c = (DMLCommand)Parser.parse("DELETE FROM ok WHERE col = col2;");
+            assertEquals(CommandType.DELETE, c.getType());
+            assertEquals("ok", c.getSubject());
+            assertEquals(Operator.EQUAL_TO, c.getCondition().operator);
+            assertEquals("col", c.getCondition().operand1);
+            assertEquals("col2", c.getCondition().operand2);
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
 }

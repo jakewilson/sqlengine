@@ -114,8 +114,8 @@ public class Parser {
 	static String columnName;
 	static String lastType;
 	static FieldType dataType;
-	static int scale;
-	static int precision;
+	static int scale = FieldType.DEFAULT_SCALE;
+	static int precision = FieldType.DEFAULT_PRECISION;
 	static Condition condition = null;
 	static String operandA = null;
 	static String operandB = null;
@@ -136,7 +136,9 @@ public class Parser {
 		line = 0;
 		column = null;
 		fieldNames.clear();
-		
+		scale = FieldType.DEFAULT_SCALE;
+		precision = FieldType.DEFAULT_PRECISION;
+
 		if(debug)
 			printTokens();//debug
 		
@@ -429,6 +431,11 @@ public class Parser {
 			(currentToken.equals("NUMBER_CONSTANT"))    ||
 			(currentToken.equals("CHARACTER_CONSTANT"))) {
 			String value = tokenizer.nextToken();
+
+			if (currentToken.equals("CHARACTER_CONSTANT"))
+				while (tokenizer.hasMoreElements())
+					value += " " + tokenizer.nextToken();
+
 			insertionValues.add(value);
 		}
 		else if (currentToken.equalsIgnoreCase("DATE_CONSTANT")) {
@@ -466,6 +473,7 @@ public class Parser {
 		if(!inFirst(28))
 			return;
 		checkToken("WHERE");
+		condition();
 		return;
 	}//where
 	

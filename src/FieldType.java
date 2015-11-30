@@ -67,7 +67,7 @@ public class FieldType implements Serializable {
  * Just bare types without any modifiers - FieldType stores
  * the precision and scale
  */
-enum Type {
+enum Type implements Serializable {
     INTEGER,
     NUMBER,
     CHARACTER,

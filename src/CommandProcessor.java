@@ -40,6 +40,9 @@ public class CommandProcessor {
                     names = t.getColumnNames();
 
                 return t.insert(names, c.getInsertionValues());
+
+            case UPDATE:
+                break;
         }
 
         return ""; // TODO
@@ -51,12 +54,29 @@ public class CommandProcessor {
             case CREATE_TABLE:
                 if (catalog.getCurrent() == null)
                     return "ERROR: No database selected.\n";
+
                 if (!catalog.getCurrent().createTable(subject, c.getColumn()))
                     return "ERROR: Table '" + subject + "' already exists.\n";
                 break;
 
             case CREATE_DB:
-                catalog.createDatabase(subject);
+                if (!catalog.createDatabase(subject))
+                    return "ERROR: database '" + subject + "' already exists.\n";
+                break;
+
+            case LOAD_DB:
+                if (!catalog.loadDatabase(subject))
+                    return "ERROR: database '" + subject + "' does not exist.\n";
+                break;
+
+            case DELETE_DB:
+                if (!catalog.dropDatabase(subject))
+                    return "ERROR: database '" + subject + "' does not exist.\n";
+                break;
+
+            case SAVE_DB:
+                if (!catalog.saveDatabase())
+                    return "ERROR: save did not work.\n";
                 break;
         }
 

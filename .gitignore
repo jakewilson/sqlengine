@@ -3,3 +3,4 @@ sqlengine.iml
 out/
 Test*.java
 *.xlsx
+*.ser
