@@ -59,7 +59,7 @@ public class LexicalAnalyzer{
 			}
 			
 			while(inString){
-				if((int)input[i] == 39){
+				if((int)input[i] == 39){ // single quote
 					output.append("CHARACTER_CONSTANT " + (new String(token)).trim() + "\n");
 					inString = false;
 					token = new char[MAX_TOKEN_LENGTH];
@@ -156,14 +156,8 @@ public class LexicalAnalyzer{
 						break;
 				}//while
 				
-				if(checkKeywords(token) > -1){ //if the token is a keyword, print it. otherwise label it as an identifier
-					output.append("" + (new String(token)).trim().toUpperCase() + "\n"); //used for parser					
-				}//if
-				
-				else{
-					output.append("NAME " + new String(token).trim()+ "\n"); //used for parser					
-				}//else
-				
+				output.append("" + (new String(token)).trim() + "\n"); //used for parser
+
 				token = new char[MAX_TOKEN_LENGTH]; //reset the token array
 				i--; // decrement i so the next character is not skipped
 				
@@ -367,7 +361,7 @@ public class LexicalAnalyzer{
 		}//for
 		*/
 		
-		String token = (new String(tokenArray)).trim().toUpperCase();
+		String token = (new String(tokenArray)).trim();
 		
 		for(int i = 0; i < KEYWORDS.length; i++){
 			if(token.equals(KEYWORDS[i]))

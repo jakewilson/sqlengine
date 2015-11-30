@@ -152,6 +152,13 @@ public class FieldTest {
         assertEquals(intColumn, f.getColumn());
     }
 
+    @Test
+    public void testIntegerSetValue() {
+        Field f = new Field(new Column("col", new FieldType(Type.INTEGER), true));
+
+        assertEquals(true, f.setValue("0"));
+    }
+
     @AfterClass
     public static void tearDown() {
         intType = numType = charType = dateType = null;

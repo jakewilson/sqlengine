@@ -23,9 +23,7 @@ public class Field implements Serializable
 
 	public Field(Column c, String value)
 	{
-		this.col = c;
-		this.ft = col.getFieldType();
-		this.value = c.isNotNull() ? "" : null;
+		this(c);
 		setValue(value);
 	}
 
@@ -49,6 +47,11 @@ public class Field implements Serializable
 	private boolean ensureType(String val)
 	{
 		Type t = ft.getType();
+
+		if (val == null && col.isNotNull())
+			return false;
+		else if (val == null && !col.isNotNull())
+			return true;
 
 		switch(t)
 		{

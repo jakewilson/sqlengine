@@ -17,10 +17,9 @@ public class Column implements Serializable {
     private FieldType type;
 
     private boolean notNull;
-    private boolean primaryKey; // is this needed?
 
     public Column(String name, FieldType type, boolean notNull) {
-        this.name = name;
+        this.name = name.toLowerCase();
         this.type = type;
         this.notNull = notNull;
         this.next = null;

@@ -85,31 +85,37 @@ public class Table implements Serializable
 	/**
 	 * This method is used to print 
 	 * Column names and values of the records
-	 * @param col ArrayList<Column> that is used to print values
+	 * @param columnNames array list of column names
 	 *
 	 */
-	public String select(ArrayList<Column> col)
+	public String select(ArrayList<String> columnNames)
 	{
 		String s = "";
 
-		if(col != null)
+		if (this.records.isEmpty())
+			return "";
+
+		if(columnNames != null)
 		{
-			for(Column c : col)
+			for(String name : columnNames)
 			{
-				s += c.getName();
+				s += name;
 				// only add the pipe if it's not the last column
-				s += (col.indexOf(c) == col.size() - 1) ? "" : " | ";
+				s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
 			}
 
 			s += "\n";
 
 			for(Record r : this.records)
 			{
-				for(Column c : col)
+				for(String name : columnNames)
 				{
-					s += r.getField(c.getName()).getValue();
+					Field f = r.getField(name);
+					if (f == null)
+						return "ERROR: Bad column name '" + name + "'.";
+					s += f.getValue();
 					// only add the pipe if it's not the last column
-					s += (col.indexOf(c) == col.size() - 1) ? "" : " | ";
+					s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
 				}
 				s += "\n";
 			}
@@ -133,13 +139,71 @@ public class Table implements Serializable
 		return false;
 	}
 
-	
-	public boolean insert(boolean wInsert)
-	{
+	/**
+	 * Returns the names of all columns in an array list
+	 * @return the names of all columns in an array list
+	 */
+	public ArrayList<String> getColumnNames() {
+		ArrayList<String> names = new ArrayList<String>();
+		Column c = first;
+		while (c != null) {
+			names.add(c.getName());
+			c = c.getNext();
+		}
 
-		//wSelect boolean 
-		return false;	
+		return names;
 	}
+
+	/**
+	 * Returns the column with the specified name
+	 * @param name the name of the column to find
+	 * @return the column with the specified name
+	 */
+	private Column findColumn(String name) {
+		Column c = first;
+		while (c != null) {
+			if (c.getName().equalsIgnoreCase(name))
+				return c;
+			c = c.getNext();
+		}
+
+		return null;
+	}
+
+	
+	public String insert(ArrayList<String> columnNames, ArrayList<String> values)
+	{
+		if (columnNames.size() != values.size())
+			return "ERROR: Wrong number of values\n";
+
+		ArrayList<String> allNames = getColumnNames();
+
+		for (int i = 0; i < columnNames.size(); i++)
+			columnNames.set(i, columnNames.get(i).toLowerCase());
+
+		for (String s : allNames) {
+			if (!columnNames.contains(s.toLowerCase())) {
+				columnNames.add(s.toLowerCase());
+				values.add(null);
+			}
+		}
+
+
+		Record r = new Record();
+		Field[] f = new Field[columnNames.size()];
+
+		for (int i = 0; i < columnNames.size(); i++)
+			if (!(f[i] = new Field(findColumn(columnNames.get(i)))).setValue(values.get(i)))
+				return "ERROR: Wrong type: " + values.get(i) + " for column '" + columnNames.get(i) + "'\n";
+
+		for (int i = 0; i < f.length; i++)
+			r.addField(f[i]);
+
+		this.addRecord(r);
+		return "";
+	}
+
+	// TODO wInsert
 
 
 	public boolean delete()

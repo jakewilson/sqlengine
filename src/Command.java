@@ -43,6 +43,8 @@ public abstract class Command {
 
     public abstract Column getColumn();
 
+    public abstract boolean isDML();
+
 }
 
 enum CommandType {
@@ -55,5 +57,6 @@ enum CommandType {
     INSERT,
     UPDATE,
     DELETE,
-    SELECT
+    SELECT,
+    WSELECT
 }

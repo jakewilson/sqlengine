@@ -37,7 +37,11 @@ public class Catalog
    {
       if (!databaseNames.containsKey(name))
       {
-         this.databaseNames.put(name, new Database(name));
+         Database d = new Database(name);
+         if (this.databaseNames.isEmpty())
+            current = d;
+
+         this.databaseNames.put(name, d);
          return true;   
       }
       else
@@ -102,5 +106,14 @@ public class Catalog
       }
 
       return true;
+   }
+
+   /**
+    * Returns the current database
+    * @return the current database
+    */
+   public Database getCurrent()
+   {
+      return current;
    }
 }
