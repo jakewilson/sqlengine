@@ -143,6 +143,7 @@ public class Table implements Serializable
 					s += f.getValue();
 					// only add the pipe if it's not the last column
 					s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
+					temp = temp.getNext();
 				}
 			}
 			s += "\n";
