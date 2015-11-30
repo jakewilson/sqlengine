@@ -7,7 +7,13 @@ public class DMLCommand extends Command {
 
     private ArrayList<String> columnNames;
     private ArrayList<String> insertionValues;
+    private Condition condition;
     public boolean allColumns = false;
+
+    public DMLCommand(CommandType type, String subject, Column column, Condition condition) {
+        super(type, subject, column);
+        this.condition = condition;
+    }
 
     public DMLCommand(CommandType type, String subject, Column column) {
         super(type, subject, column);
@@ -57,4 +63,11 @@ public class DMLCommand extends Command {
         return true;
     }
 
+    public void setCondition(Condition c) {
+        condition = c;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
 }
