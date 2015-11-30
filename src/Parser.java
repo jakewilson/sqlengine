@@ -94,14 +94,15 @@ public class Parser {
 			{},//						39
 			{}//						40
 	};
-	static String[] input;
 	static final int DEFAULT_PRECISION = 4;
 	static final int DEFAULT_SCALE = 12;
+	static final boolean debug = false;
 	
+	static String[] input;	
 	static int line = 0;//iterator
 
-	static boolean debug = false;
 	static boolean allColumns = true;
+	static boolean inCondition = false;
 
 	static ArrayList<String> fieldNames = new ArrayList<String>();
 	static ArrayList<String> insertionValues = new ArrayList<String>();
@@ -115,6 +116,11 @@ public class Parser {
 	static FieldType dataType;
 	static int scale;
 	static int precision;
+	static Condition condition = null;
+	static String operandA = null;
+	static String operandB = null;
+	static Operator relOp = null;
+	static LogicalOperator logicOp = null;
 	
 	/**
 	 * Tokenizes the command input string and performs an LL(1) parse using a grammar for wSQLx (listed in Grammar.txt)
@@ -130,10 +136,13 @@ public class Parser {
 		line = 0;
 		column = null;
 		fieldNames.clear();
-
-		printTokens();//debug
+		
+		if(debug)
+			printTokens();//debug
 		
 		commands();//Start state
+		if(command.isDML())
+			((DMLCommand)command).setCondition(condition);
 		
 		return command;
 	}//parse
@@ -172,7 +181,7 @@ public class Parser {
 		checkToken("CREATE");
 		createB();
 		return;
-	}//deleteStatement
+	}//createA
 	
 	static void createB() throws ParseException{// 2
 		if(inFirst(5))
@@ -180,13 +189,13 @@ public class Parser {
 		else if(inFirst(8))
 			createTable();
 		return;
-	}//deleteStatement
+	}//createB
 	
 	static void dropA() throws ParseException{// 3
 		checkToken("DROP");
 		dropB();
 		return;
-	}//deleteStatement
+	}//dropA
 	
 	static void dropB() throws ParseException{// 4
 		if(inFirst(5))
@@ -195,7 +204,7 @@ public class Parser {
 		else if(inFirst(19))
 			dropTable();
 		return;
-	}//deleteStatement
+	}//dropB
 	
 	static void database(boolean createCommand) throws ParseException{// 5
 		checkToken("DATABASE");
@@ -209,7 +218,7 @@ public class Parser {
 
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//database
 	
 	static void save() throws ParseException{// 6
 		if(getToken(line).equalsIgnoreCase("SAVE") || getToken(line).equalsIgnoreCase("COMMIT")){//I did not use the checkToken method here because either SAVE or COMMIT is valid
@@ -220,7 +229,7 @@ public class Parser {
 		else
 			reject();
 		return;
-	}//deleteStatement
+	}//save
 	
 	static void load() throws ParseException{// 7
 		checkToken("LOAD");
@@ -232,7 +241,7 @@ public class Parser {
 		
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//load
 	
 	static void createTable() throws ParseException{// 8
 		checkToken("TABLE");
@@ -245,16 +254,16 @@ public class Parser {
 		command = new DDLCommand(CommandType.CREATE_TABLE, tableName, column);
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//createTable
 	
 	static void fieldDefList() throws ParseException{// 9
 		parseColumn();
 		while (inFirst(23)) {
 			line++;
 			parseColumn();
-		}
+		}//while
 		return;
-	}//deleteStatement
+	}//fieldDefList
 
 	static void parseColumn() throws ParseException {
 		columnName = getToken(line++);
@@ -265,13 +274,13 @@ public class Parser {
 			notNull = true;
 
 		appendColumn();
-	}
+	}//parseColumn
 	
 	static void fieldDef() throws ParseException{// 10
 
 		fieldDefList();
 		return;
-	}//deleteStatement
+	}//fieldDef
 	
 	static void type() throws ParseException{// 11
 		if(inFirst(12))
@@ -285,21 +294,21 @@ public class Parser {
 			lastType = "DATE";
 		}
 		return;
-	}//deleteStatement
+	}//type
 	
 	static void integer() throws ParseException{// 12
 		checkToken("INTEGER");
 		lastType = "INTEGER";
 		param1();
 		return;
-	}//deleteStatement
+	}//integer
 	
 	static void character() throws ParseException{// 13
 		checkToken("CHARACTER");
 		lastType = "CHARACTER";
 		param1();
 		return;
-	}//deleteStatement
+	}//character
 	
 	static void param1() throws ParseException{// 14
 		if(inFollow(14))
@@ -309,14 +318,14 @@ public class Parser {
 		precision = Integer.parseInt(getLastValue());
 		checkToken(")");
 		return;
-	}//deleteStatement
+	}//param1
 	
 	static void number() throws ParseException{// 15
 		checkToken("NUMBER");
 		lastType = "NUMBER";
 		param2A();
 		return;
-	}//deleteStatement
+	}//number
 	
 	static void param2A() throws ParseException{// 16
 		if(inFollow(16))
@@ -326,7 +335,7 @@ public class Parser {
 		precision = Integer.parseInt(getLastValue());
 		param2B();
 		return;
-	}//deleteStatement
+	}//param2A
 	
 	static void param2B() throws ParseException{// 17
 		if(getToken(line).equals(")")){
@@ -338,7 +347,7 @@ public class Parser {
 		scale = Integer.parseInt(getLastValue());
 		checkToken(")");
 		return;
-	}//deleteStatement
+	}//param2B
 	
 	static void constraints() throws ParseException{// 18
 		if(inFollow(18))
@@ -346,7 +355,7 @@ public class Parser {
 		checkToken("NOT");
 		checkToken("NULL");
 		return;
-	}//deleteStatement
+	}//constraints
 	
 	static void dropTable() throws ParseException{// 19
 		checkToken("TABLE");
@@ -354,7 +363,7 @@ public class Parser {
 		command = new DDLCommand(CommandType.DROP_TABLE, tableName);
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//dropTable
 	
 	static void insert() throws ParseException{// 20
 		checkToken("INSERT");
@@ -367,11 +376,11 @@ public class Parser {
 		literals();
 		checkToken(")");
 		checkToken(";");
-		command = new DMLCommand(CommandType.INSERT, tableName);//TODO Add insert params
+		command = new DMLCommand(CommandType.INSERT, tableName);
 		((DMLCommand)command).setColumnNames(fieldNames);
 		((DMLCommand)command).setInsertionValues(insertionValues);
 		return;
-	}//deleteStatement
+	}//insert
 	
 	static void fieldList() throws ParseException{// 21
 		fieldNames.clear();
@@ -385,11 +394,11 @@ public class Parser {
 		}
 		checkToken(")");
 		return;
-	}
+	}//fieldList
 	
 	static void fields() throws ParseException{// 22
 		fieldNames.add(getToken(line++).toLowerCase());
-	}
+	}//fields
 	
 	static void nextField() throws ParseException{// 23
 		if(inFollow(23))
@@ -397,13 +406,13 @@ public class Parser {
 		checkToken("NAME");
 		fields();
 		return;
-	}//deleteStatement
+	}//nextField
 	
 	static void literals() throws ParseException{// 24
 		literal();
 		nextLiteral();
 		return;
-	}//deleteStatement
+	}//literals
 	
 	static void literal() throws ParseException{// 25
 		String currentToken = null;
@@ -432,7 +441,7 @@ public class Parser {
 			reject();
 		line++;
 		return;
-	}//deleteStatement
+	}//literal
 	
 	static void nextLiteral() throws ParseException{// 26
 		if(inFollow(26))
@@ -440,116 +449,152 @@ public class Parser {
 		checkToken(",");
 		literals();
 		return;
-	}//deleteStatement
+	}//nextLiteral
 
 	static void delete() throws ParseException{// 27
 		checkToken("DELETE");
 		checkToken("FROM");
-		checkToken("NAME");
-		String tableName = getLastValue();
+		String tableName = getToken(line++);
 		where();
-		command = new DMLCommand(CommandType.DELETE, tableName); //TODO Add params
+		command = new DMLCommand(CommandType.DELETE, tableName);
+		((DMLCommand)command).setColumnNames(fieldNames);
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//delete
 	
 	static void where() throws ParseException{// 28
 		if(!inFirst(28))
 			return;
 		checkToken("WHERE");
-		condition();
 		return;
-	}//deleteStatement
+	}//where
 	
 	static void condition() throws ParseException{// 29
-		checkToken("NAME");
+		inCondition = true;
+		operand();
 		relop();
 		operand();
+		inCondition = false;
+		addCondition();
 		conditionList();
 		return;
-	}//deleteStatement
+	}//condition
 	
 	static void relop() throws ParseException{// 30
-		if(getToken(line).equals("="))
+		if(getToken(line).equals("=")){
 			line++;
-		else if(getToken(line).equals("<"))
+			if(inCondition)
+				relOp = Operator.EQUAL_TO;
+		}//if
+		else if(getToken(line).equals("<")){
 			line++;
-		else if(getToken(line).equals(">"))
+			if(inCondition)
+				relOp = Operator.LESS_THAN;
+		}//else if
+		else if(getToken(line).equals(">")){
 			line++;
-		else if(getToken(line).equals("<="))
+			if(inCondition)
+				relOp = Operator.GREATER_THAN;
+		}//else if
+		else if(getToken(line).equals("<=")){
 			line++;
-		else if(getToken(line).equals(">="))
+			if(inCondition)
+				relOp = Operator.LESS_THAN_OR_EQUAL_TO;
+		}//else if
+		else if(getToken(line).equals(">=")){
 			line++;
-		else if(getToken(line).equals("<>"))
+			if(inCondition)
+				relOp = Operator.GREATER_THAN_OR_EQUAL_TO;
+		}//else if
+		else if(getToken(line).equals("<>")){
 			line++;
+			if(inCondition)
+				relOp = Operator.NOT_EQUAL_TO;
+		}//else if
 		else
 			reject();
 		return;
-	}//deleteStatement
+	}//relop
 	
 	static void operand() throws ParseException{// 31
 		String currentToken = null;
 		
-		if(getToken(line).contains(" ")){//This is for tokens like DATE which is in the format "DATE MM DD [YY]YY"
+		if(getToken(line).contains(" ")){//Only literals will contain a space
 			StringTokenizer tokenizer = new StringTokenizer(getToken(line), " ");
 			currentToken = tokenizer.nextToken();
 		}//if
 		
-		else
+		else{
 			currentToken = getToken(line);
+		}//else
 		
-		if(currentToken.equals("INTEGER_CONSTANT"))
+		if(currentToken.equals("INTEGER_CONSTANT")){
 			line++;
-		else if(currentToken.equals("NUMBER_CONSTANT"))
+			currentToken = getLastValue();
+		}//if
+		else if(currentToken.equals("NUMBER_CONSTANT")){
 			line++;
+			currentToken = getLastValue();
+		}//else if
 		else if(currentToken.equals("CHARACTER_CONSTANT"))
-			line++;
+			currentToken = formatString(getToken(line++));
 		else if(currentToken.equals("DATE_CONSTANT"))
-			line++;
-		else if(currentToken.equals("NAME"))
-			line++;
+			currentToken = formatDate(getToken(line++));
 		else
 			reject();
+		
+		if(inCondition && operandA == null)
+			operandA = currentToken;
+		
+		else if(inCondition && operandB == null)
+			operandB = currentToken;
+		
 		return;
-	}//deleteStatement
+	}//operand
 	
 	static void conditionList() throws ParseException{// 32
 		if(inFollow(32))
 			return;
-		if(getToken(line).equals("OR"))
+		if(getToken(line).equals("OR")){
 			line++;
-		else if(getToken(line).equals("AND"))
+			logicOp = LogicalOperator.OR;
+		}//if
+		else if(getToken(line).equals("AND")){
 			line++;
+			logicOp = LogicalOperator.AND;
+		}//else if
 		else
 			reject();
 		condition();
 		return;
-	}//deleteStatement
+	}//conditionList
 	
 	static void update() throws ParseException{// 33
 		checkToken("UPDATE");
-		checkToken("NAME");
-		String tableName = getLastValue();
+		String tableName = getToken(line++);
 		checkToken("SET");
 		setList();
 		where();		
-		command = new DMLCommand(CommandType.UPDATE, tableName);//TODO Add params
+		command = new DMLCommand(CommandType.UPDATE, tableName);
+		((DMLCommand)command).setColumnNames(fieldNames);
+		((DMLCommand)command).setInsertionValues(insertionValues);
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//update
 	
 	static void expression() throws ParseException{// 34
 		operand();
 		return;
-	}//deleteStatement
+	}//expression
 	
 	static void setList() throws ParseException{// 35
-		checkToken("");
-		checkToken("");
+		fieldNames.add(getToken(line++));
+		checkToken("=");
 		expression();
+		insertionValues.add(getLastValue());
 		nextSet();
 		return;
-	}//deleteStatement
+	}//setList
 	
 	static void nextSet() throws ParseException{// 36
 		if(inFollow(36))
@@ -557,19 +602,20 @@ public class Parser {
 		checkToken(",");
 		setList();
 		return;
-	}//deleteStatement
+	}//nextSet
 	
 	static void wUpdate() throws ParseException{// 37
 		checkToken("WUPDATE");
-		checkToken("NAME");
-		String tableName = getLastValue();
+		String tableName = getToken(line++);
 		checkToken("SET");
 		setList();
 		where();
-		command = new DMLCommand(CommandType.UPDATE, tableName);//TODO Add params, specify as wUpdate?
+		command = new DMLCommand(CommandType.UPDATE, tableName);
+		((DMLCommand)command).setColumnNames(fieldNames);
+		((DMLCommand)command).setInsertionValues(insertionValues);
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//wUpdate
 
 	static void select() throws ParseException{// 38
 		CommandType type = CommandType.SELECT;
@@ -581,13 +627,13 @@ public class Parser {
 		checkToken("FROM");
 		String tableName = getToken(line++);
 		where();
-		command = new DMLCommand(type, tableName);//TODO Add params
+		command = new DMLCommand(type, tableName);
 		((DMLCommand)command).setColumnNames(fieldNames);
 		((DMLCommand)command).allColumns = allColumns;
 		allColumns = false;
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//select
 	
 	static void wSelect() throws ParseException{// 39
 		checkToken("WSELECT");
@@ -596,10 +642,12 @@ public class Parser {
 		checkToken("NAME");
 		String tableName = getLastValue();
 		where();
-		command = new DMLCommand(CommandType.SELECT, tableName);//TODO Add params, specify as wSelect?
+		command = new DMLCommand(CommandType.SELECT, tableName);
+		((DMLCommand)command).setColumnNames(fieldNames);
+		((DMLCommand)command).allColumns = allColumns;
 		checkToken(";");
 		return;
-	}//deleteStatement
+	}//wSelect
 	
 	static void selectParams() throws ParseException{// 40
 		if(getToken(line).equals("*")){
@@ -613,7 +661,7 @@ public class Parser {
 		}
 
 		return;
-	}//deleteStatement
+	}//selectParams
 	
 	/*
 	 * --------------------------------------
@@ -658,10 +706,9 @@ public class Parser {
 		return false;
 	}//inFollow
 	
-	private static void printTokens(){//This function is used to test the Lexer
-		if (debug)
-			for(int i = 0; i < input.length; i++)
-				System.out.println(input[i]);
+	private static void printTokens(){//This method is used to test the Lexer
+		for(int i = 0; i < input.length; i++)
+			System.out.println(input[i]);
 	}//printInput
 
 	private static String formatDate(String dateToken){//converts date string from "DATE MM DD YY[YY]" to "MM/DD/[YY]YY"
@@ -681,7 +728,7 @@ public class Parser {
 
 	private static void reject(String expected, String actual) throws ParseException {
 		throw new ParseException("Syntax Error\nExpected: " + expected + " actual: " + actual);
-	}
+	}//reject String String
 
 	private static void checkToken(String expectedValue) throws ParseException{
 		String valueToCheck = null;
@@ -769,5 +816,35 @@ public class Parser {
 			throw new ParseException();
 
 		return input[line];
-	}
+	}//getToken
+	
+	private static String formatString(String rawString){//adds single quotes to string tokens, does nothing to other tokens
+		StringTokenizer tokenizer = new StringTokenizer(rawString, " ");
+		if(tokenizer.nextToken().equals("CHARACTER_CONSTANT")){
+			String retVal = "";
+			for(int i = 1; i < tokenizer.countTokens(); i++)
+				retVal += tokenizer.nextToken();
+			return retVal;
+		}//if
+		else
+			return rawString;
+	}//formatString
+	
+	private static void addCondition(){//adds the current condition to the end of the linked list
+		if(condition == null)
+			condition = new Condition(operandA, operandB, relOp, logicOp);
+		else{
+			Condition currentCondition = condition;
+			while(currentCondition.getNext() != null)
+				currentCondition = currentCondition.getNext();
+			Condition nextCondition = new Condition(operandA, operandB, relOp, logicOp);
+			currentCondition.setNext(nextCondition);
+		}//else
+		operandA = null;
+		operandB = null;
+		relOp = null;
+		logicOp = null;
+		return;
+	}//addCondition
+	
 }//class Parser
