@@ -110,7 +110,7 @@ Where:
 	empty
 
 Condition:
-	NAME Relop Operand ConditionList
+	Operand Relop Operand ConditionList
 
 Relop:
 	= |
