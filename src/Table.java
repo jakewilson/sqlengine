@@ -119,8 +119,22 @@ public class Table implements Serializable
 				}
 				s += "\n";
 			}
+			return s;
+			
+			//TODO record names of all the columns
+		} else {
+			Column temp = this.first;
+			while(temp.getNext() != null)
+			{
+				if(temp.getNext() != null) {
+					s += temp.getName() + " | ";
+				} else {
+					s += temp.getName();
+				}
+				temp = temp.getNext();
+			}
+			return s;
 		}
-		return s;
 	}
 	
 	/**
