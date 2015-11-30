@@ -21,6 +21,10 @@ public class Condition {
     public void setNext(Condition c) {
         this.next = c;
     }
+    
+    public Condition getNext(){
+    	return this.next;
+    }
 
 }
 
@@ -33,7 +37,7 @@ enum Operator {
     GREATER_THAN,
     LESS_THAN,
     EQUAL_TO,
-    NOT_EQUALS,
+    NOT_EQUAL_TO,
     GREATER_THAN_OR_EQUAL_TO,
     LESS_THAN_OR_EQUAL_TO
 }
