@@ -202,15 +202,50 @@ public class CommandProcessorTest {
     }
 
     @Test
-    public void insertCharacterIntoTable() {
+    public void updateRows() {
         try {
             CommandProcessor cp = new CommandProcessor(c);
-            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE martino;")));
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE testUpdate;")));
+            assertEquals("", cp.execute(Parser.parse("LOAD DATABASE testUpdate;")));
+            assertEquals("", cp.execute(Parser.parse("CREATE TABLE employee (eno INTEGER, name CHARACTER(20));")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (0, 'jake');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (1, 'bob');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (2, 'nick');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (3, 'gabby');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (4, 'zack');")));
 
-            assertEquals("ERROR: database 'martino' already exists.\n", cp.execute(Parser.parse("CREATE DATABASE martino;")));
+            String expected = "eno | name\n";
+            expected += "5 | jake\n5 | bob\n5 | nick\n5 | gabby\n5 | zack\n";
+            assertEquals("", cp.execute(Parser.parse("UPDATE employee SET eno = 5;")));
+            assertEquals(expected, cp.execute(Parser.parse("SELECT * FROM employee;")));
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
             fail();
         }
     }
+
+    @Test
+    public void deleteRows() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE 1234;")));
+            assertEquals("", cp.execute(Parser.parse("LOAD DATABASE 1234;")));
+            assertEquals("", cp.execute(Parser.parse("CREATE TABLE employee (eno INTEGER, name CHARACTER(20));")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (0, 'jake');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (1, 'bob');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (2, 'nick');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (3, 'gabby');")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (4, 'zack');")));
+
+            String expected = "eno | name\n";
+            expected += "0 | jake\n1 | bob\n2 | nick\n3 | gabby\n4 | zack\n";
+            assertEquals(expected, cp.execute(Parser.parse("SELECT * FROM employee;")));
+            assertEquals("", cp.execute(Parser.parse("DELETE FROM employee;")));
+            assertEquals("", cp.execute(Parser.parse("SELECT * FROM employee;")));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
 }

@@ -373,9 +373,11 @@ public class ParserTest {
     @Test
     public void testUpdate() {
         try {
-            Command c = Parser.parse("UPDATE table SET col = 5;");
+            DMLCommand c = (DMLCommand)Parser.parse("UPDATE table SET col = 5;");
             assertEquals(CommandType.UPDATE, c.getType());
             assertEquals("table", c.getSubject());
+            assertEquals("col", c.getColumnNames().get(0));
+            assertEquals("5", c.getInsertionValues().get(0));
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
             fail();

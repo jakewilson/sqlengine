@@ -42,7 +42,10 @@ public class CommandProcessor {
                 return t.insert(names, c.getInsertionValues());
 
             case UPDATE:
-                break;
+                return t.update(c.getCondition(), c.getColumnNames().get(0), c.getInsertionValues().get(0));
+
+            case DELETE:
+                return t.delete(c.getCondition());
         }
 
         return ""; // TODO

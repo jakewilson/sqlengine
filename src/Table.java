@@ -123,12 +123,6 @@ public class Table implements Serializable
 		return s;
 	}
 	
-	public boolean update(Condition condition, String columnName, String value)
-	{
-
-		return false;
-	}
-
 	/**
 	 * Returns the names of all columns in an array list
 	 * @return the names of all columns in an array list
@@ -193,11 +187,28 @@ public class Table implements Serializable
 		return "";
 	}
 
-	// TODO wInsert
-
-
-	public boolean delete()
+	public String delete(Condition c)
 	{
-		return false;
+		return "";
 	}
+
+	/**
+	 * Updates the table
+	 * @param condition the condition on which to update a record
+	 * @param columnName the column to update
+	 * @param value the value to update the column to
+	 * @return whether an error occurred or not
+	 */
+	public String update(Condition condition, String columnName, String value)
+	{
+		for (Record r : records)
+			if (condition == null || condition.evaluate(r))
+				if (r.getField(columnName) == null)
+					return "ERROR: column name " + columnName + " does not exist.\n";
+				else if (!r.getField(columnName).setValue(value))
+					return "ERROR: value " + value + " is the wrong type.\n";
+
+		return "";
+	}
+
 }
