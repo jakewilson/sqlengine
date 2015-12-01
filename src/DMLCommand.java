@@ -9,6 +9,8 @@ public class DMLCommand extends Command {
     private ArrayList<String> insertionValues;
     private Condition condition;
     public boolean allColumns = false;
+    public String updateColumnName;
+    public String updateColumnValue;
 
     public DMLCommand(CommandType type, String subject, Column column, Condition condition) {
         super(type, subject, column);

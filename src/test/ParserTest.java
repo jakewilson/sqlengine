@@ -404,6 +404,8 @@ public class ParserTest {
             assertEquals(Operator.EQUAL_TO, c.getCondition().operator);
             assertEquals("col", c.getCondition().operand1);
             assertEquals("col2", c.getCondition().operand2);
+            assertEquals("col3", c.getColumnNames().get(0));
+            assertEquals("16", c.getInsertionValues().get(0));
         } catch (ParseException pex) {
             System.out.println(pex.getMessage());
             fail();
@@ -413,10 +415,10 @@ public class ParserTest {
     @Test
     public void testDeleteWithCondition() {
         try {
-            DMLCommand c = (DMLCommand)Parser.parse("DELETE FROM ok WHERE col = col2;");
+            DMLCommand c = (DMLCommand)Parser.parse("DELETE FROM ok WHERE col >= col2;");
             assertEquals(CommandType.DELETE, c.getType());
             assertEquals("ok", c.getSubject());
-            assertEquals(Operator.EQUAL_TO, c.getCondition().operator);
+            assertEquals(Operator.GREATER_THAN_OR_EQUAL_TO, c.getCondition().operator);
             assertEquals("col", c.getCondition().operand1);
             assertEquals("col2", c.getCondition().operand2);
         } catch (ParseException pex) {
@@ -424,4 +426,64 @@ public class ParserTest {
             fail();
         }
     }
+
+    @Test
+    public void testUpdateWithConditionComplex() {
+        try {
+            DMLCommand c = (DMLCommand)Parser.parse("UPDATE ok SET col3 = 16 WHERE col = col2 AND col4 > 72000;");
+            assertEquals(CommandType.UPDATE, c.getType());
+            assertEquals("ok", c.getSubject());
+            assertEquals(Operator.EQUAL_TO, c.getCondition().operator);
+            assertEquals("col", c.getCondition().operand1);
+            assertEquals("col2", c.getCondition().operand2);
+            assertEquals("col3", c.getColumnNames().get(0));
+            assertEquals("16", c.getInsertionValues().get(0));
+            assertEquals(LogicalOperator.AND, c.getCondition().logicalOperator);
+
+            Condition cond = c.getCondition().getNext();
+            assertNotEquals(null, cond);
+            assertEquals(Operator.GREATER_THAN, cond.operator);
+            assertEquals("col4", cond.operand1);
+            assertEquals("72000", cond.operand2);
+            assertEquals(null, cond.getNext());
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testUpdateWithConditionVeryComplex() {
+        try {
+            DMLCommand c = (DMLCommand)Parser.parse("UPDATE oiwk SET attr = 5 WHERE pno <> col21 AND joe < 42 OR bo <= 38.9;");
+            assertEquals(CommandType.UPDATE, c.getType());
+            assertEquals("oiwk", c.getSubject());
+            assertEquals(Operator.NOT_EQUAL_TO, c.getCondition().operator);
+            assertEquals("pno", c.getCondition().operand1);
+            assertEquals("col21", c.getCondition().operand2);
+            assertEquals("attr", c.getColumnNames().get(0));
+            assertEquals("5", c.getInsertionValues().get(0));
+            assertEquals(LogicalOperator.AND, c.getCondition().logicalOperator);
+
+            Condition cond = c.getCondition().getNext();
+            assertNotEquals(null, cond);
+            assertEquals(Operator.LESS_THAN, cond.operator);
+            assertEquals("joe", cond.operand1);
+            assertEquals("42", cond.operand2);
+            assertEquals(LogicalOperator.OR, cond.logicalOperator);
+
+            cond = cond.getNext();
+            assertNotEquals(null, cond);
+            assertEquals(Operator.LESS_THAN_OR_EQUAL_TO, cond.operator);
+            assertEquals("bo", cond.operand1);
+            assertEquals("38.9", cond.operand2);
+            assertEquals(null, cond.getNext());
+            assertEquals(null, cond.logicalOperator);
+
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
 }

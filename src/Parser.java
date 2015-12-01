@@ -121,6 +121,7 @@ public class Parser {
 	static String operandB = null;
 	static Operator relOp = null;
 	static LogicalOperator logicOp = null;
+	static String setColumn = null;
 	
 	/**
 	 * Tokenizes the command input string and performs an LL(1) parse using a grammar for wSQLx (listed in Grammar.txt)
@@ -136,8 +137,13 @@ public class Parser {
 		line = 0;
 		column = null;
 		fieldNames.clear();
+		insertionValues.clear();
 		scale = FieldType.DEFAULT_SCALE;
 		precision = FieldType.DEFAULT_PRECISION;
+		condition = null;
+		relOp = null;
+		logicOp = null;
+		setColumn = null;
 
 		if(debug)
 			printTokens();//debug
@@ -474,6 +480,9 @@ public class Parser {
 			return;
 		checkToken("WHERE");
 		condition();
+		while (!inFollow(32)) {
+			condition();
+		}
 		return;
 	}//where
 	
@@ -483,8 +492,8 @@ public class Parser {
 		relop();
 		operand();
 		inCondition = false;
+		assignLogicOp();
 		addCondition();
-		conditionList();
 		return;
 	}//condition
 	
@@ -526,14 +535,13 @@ public class Parser {
 	
 	static void operand() throws ParseException{// 31
 		String currentToken = null;
-		
+
 		if(getToken(line).contains(" ")){//Only literals will contain a space
 			StringTokenizer tokenizer = new StringTokenizer(getToken(line), " ");
 			currentToken = tokenizer.nextToken();
 		}//if
-		
 		else{
-			currentToken = getToken(line);
+			currentToken = getToken(line++);
 		}//else
 		
 		if(currentToken.equals("INTEGER_CONSTANT")){
@@ -548,21 +556,20 @@ public class Parser {
 			currentToken = formatString(getToken(line++));
 		else if(currentToken.equals("DATE_CONSTANT"))
 			currentToken = formatDate(getToken(line++));
-		else
-			reject();
-		
+
+		if (!inCondition)
+			setColumn = currentToken;
+
 		if(inCondition && operandA == null)
 			operandA = currentToken;
 		
 		else if(inCondition && operandB == null)
 			operandB = currentToken;
-		
+
 		return;
 	}//operand
 	
-	static void conditionList() throws ParseException{// 32
-		if(inFollow(32))
-			return;
+	static void assignLogicOp() throws ParseException{// 32
 		if(getToken(line).equals("OR")){
 			line++;
 			logicOp = LogicalOperator.OR;
@@ -571,9 +578,6 @@ public class Parser {
 			line++;
 			logicOp = LogicalOperator.AND;
 		}//else if
-		else
-			reject();
-		condition();
 		return;
 	}//conditionList
 	
@@ -599,18 +603,9 @@ public class Parser {
 		fieldNames.add(getToken(line++));
 		checkToken("=");
 		expression();
-		insertionValues.add(getLastValue());
-		nextSet();
+		insertionValues.add(setColumn);
 		return;
 	}//setList
-	
-	static void nextSet() throws ParseException{// 36
-		if(inFollow(36))
-			return;
-		checkToken(",");
-		setList();
-		return;
-	}//nextSet
 	
 	static void wUpdate() throws ParseException{// 37
 		checkToken("WUPDATE");

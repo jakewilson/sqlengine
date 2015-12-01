@@ -14,8 +14,6 @@ public class WSql {
     private Scanner input;
 
     public WSql(String path) {
-        // TODO load file if saved
-        // create new catalog if not
         try {
             FileInputStream fileIn = new FileInputStream(path);
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -38,6 +36,7 @@ public class WSql {
     public boolean promptUser() {
         System.out.print("wSQL> ");
         String cmd = input.nextLine();
+
         if (cmd.trim().equalsIgnoreCase("exit"))
             return false;
 
@@ -56,7 +55,6 @@ public class WSql {
             return;
         }
 
-        // TODO check if args[1] is there
         WSql w = new WSql(args[0]);
         while (w.promptUser());
     }

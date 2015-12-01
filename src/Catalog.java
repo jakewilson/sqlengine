@@ -61,7 +61,7 @@ public class Catalog implements Serializable
    {
       if (databaseNames.containsKey(name))
       {
-         if (current.equals(databaseNames.get(name)))
+         if (current != null && current.equals(databaseNames.get(name)))
             current = null;
 
          databaseNames.remove(name);

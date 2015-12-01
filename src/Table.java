@@ -123,19 +123,9 @@ public class Table implements Serializable
 		return s;
 	}
 	
-	/**
-	 * Calls select with no value
-	 * TODO
-	 */
-	public void select()
+	public boolean update(Condition condition, String columnName, String value)
 	{
-		select(null);
-	}
 
-
-	public boolean update(boolean wUpdate)
-	{
-		//wUpdate boolean
 		return false;
 	}
 
