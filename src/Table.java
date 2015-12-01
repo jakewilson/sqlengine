@@ -187,8 +187,17 @@ public class Table implements Serializable
 		return "";
 	}
 
-	public String delete(Condition c)
+	/**
+	 * Removes records from the table
+	 * @param condition the condition on which to remove records
+	 * @return whether an error occurred or not
+	 */
+	public String delete(Condition condition)
 	{
+		for (int i = 0; i < records.size(); i++)
+			if (condition == null || condition.evaluate(records.get(i)))
+				records.remove(i--);
+
 		return "";
 	}
 
