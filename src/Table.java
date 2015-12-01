@@ -88,7 +88,7 @@ public class Table implements Serializable
 	 * @param columnNames array list of column names
 	 *
 	 */
-	public String select(ArrayList<String> columnNames)
+	public String select(ArrayList<String> columnNames, Condition condition)
 	{
 		String s = "";
 
@@ -108,16 +108,17 @@ public class Table implements Serializable
 
 			for(Record r : this.records)
 			{
-				for(String name : columnNames)
-				{
-					Field f = r.getField(name);
-					if (f == null)
-						return "ERROR: Bad column name '" + name + "'.";
-					s += f.getValue();
-					// only add the pipe if it's not the last column
-					s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
+				if (condition == null || condition.evaluate(r)) {
+					for (String name : columnNames) {
+						Field f = r.getField(name);
+						if (f == null)
+							return "ERROR: Bad column name '" + name + "'.";
+						s += f.getValue();
+						// only add the pipe if it's not the last column
+						s += (columnNames.indexOf(name) == columnNames.size() - 1) ? "" : " | ";
+					}
+					s += "\n";
 				}
-				s += "\n";
 			}
 		}
 		return s;

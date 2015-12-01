@@ -326,4 +326,53 @@ public class CommandProcessorTest {
             fail();
         }
     }
+
+    @Test
+    public void deleteRowsWhereComplex() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE testUpdate;")));
+            assertEquals("", cp.execute(Parser.parse("LOAD DATABASE testUpdate;")));
+            assertEquals("", cp.execute(Parser.parse("CREATE TABLE employee (eno INTEGER, name CHARACTER(20), iscostco INTEGER);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (0, 'jake', 1);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (1, 'bob', 0);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (2, 'nick', 1);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (3, 'gabby', 0);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (4, 'zack', 1);")));
+
+            String expected = "eno | name\n";
+            expected += "0 | jake\n1 | bob\n2 | nick\n3 | gabby\n4 | zack\n";
+            assertEquals(expected, cp.execute(Parser.parse("SELECT (eno, name) FROM employee;")));
+            assertEquals("", cp.execute(Parser.parse("DELETE FROM employee WHERE eno <> 2 AND eno <> 4;")));
+            String expected1 = "eno | name | iscostco\n";
+            expected1 += "2 | nick | 1\n4 | zack | 1\n";
+            assertEquals(expected1, cp.execute(Parser.parse("SELECT * FROM employee;")));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void selectWhere() {
+        try {
+            CommandProcessor cp = new CommandProcessor(c);
+            assertEquals("", cp.execute(Parser.parse("CREATE DATABASE testUpdate;")));
+            assertEquals("", cp.execute(Parser.parse("LOAD DATABASE testUpdate;")));
+            assertEquals("", cp.execute(Parser.parse("CREATE TABLE employee (eno INTEGER, name CHARACTER(20), iscostco INTEGER);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (0, 'jake', 1);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (1, 'bob', 0);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (2, 'nick', 1);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (3, 'gabby', 0);")));
+            assertEquals("", cp.execute(Parser.parse("INSERT INTO employee VALUES (4, 'zack', 1);")));
+
+            String expected = "name\n";
+            expected += "nick\ngabby\nzack\n";
+            assertEquals(expected, cp.execute(Parser.parse("SELECT (name) FROM employee WHERE eno > 1;")));
+        } catch (ParseException pex) {
+            System.out.println(pex.getMessage());
+            fail();
+        }
+    }
+
 }

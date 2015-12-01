@@ -33,7 +33,7 @@ public class CommandProcessor {
                 if (names.isEmpty() && c.allColumns)
                     names = t.getColumnNames();
 
-                return t.select(names);
+                return t.select(names, c.getCondition());
 
             case INSERT:
                 if (names.isEmpty())

@@ -55,7 +55,7 @@ public class TableTest {
         ArrayList<String> cols = new ArrayList<String>();
         cols.add(eno.getName()); cols.add(name.getName()); cols.add(age.getName()); cols.add(bday.getName());
 
-        String result = table.select(cols);
+        String result = table.select(cols, null);
 
         assertEquals("", result);
     }
@@ -87,7 +87,7 @@ public class TableTest {
 
         table.addRecord(r); table.addRecord(r1);
 
-        assertEquals(expectedResult, table.select(cols));
+        assertEquals(expectedResult, table.select(cols, null));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class TableTest {
         expectedResult += "21 | 1\n";
 
         table.addRecord(r); table.addRecord(r1);
-        assertEquals(expectedResult, table.select(cols));
+        assertEquals(expectedResult, table.select(cols, null));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class TableTest {
 
         expectedResult += "4 | Another | 12 | 09/14/56\n";
 
-        assertEquals(expectedResult, table.select(columns));
+        assertEquals(expectedResult, table.select(columns, null));
     }
 
     @Test
