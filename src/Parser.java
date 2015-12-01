@@ -843,6 +843,7 @@ public class Parser {
 			Condition nextCondition = new Condition(operandA, operandB, relOp, logicOp);
 			currentCondition.setNext(nextCondition);
 		}//else
+		// TODO check types
 		operandA = null;
 		operandB = null;
 		relOp = null;

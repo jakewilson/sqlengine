@@ -1,4 +1,3 @@
-import com.sun.corba.se.impl.naming.cosnaming.NamingUtils;
 
 /**
  * Created by jakewilson on 11/30/15.
@@ -36,7 +35,8 @@ public class Condition {
      * @param op the operand whose type to determine
      * @return the type of the operand
      */
-    public Type determineType(String op) {
+    private Type determineType(String op) {
+        op = op.trim();
         try {
             Double.parseDouble(op);
             return Type.NUMBER;
@@ -56,7 +56,61 @@ public class Condition {
      * @return the result of the condition
      */
     public boolean evaluate(Record r) {
-        return true; // TODO
+        String o1 = operand1, o2 = operand2;
+        if (operand1Type == Type.CHARACTER) {
+            if (r.getField(operand1) == null) {
+                System.out.println("ERROR: bad column name: " + operand1);
+                return false;
+            }
+
+            o1 = r.getField(operand1).getValue();
+        }
+
+        if (operand2Type == Type.CHARACTER) {
+            if (r.getField(operand2) == null) {
+                System.out.println("ERROR: bad column name: " + operand2);
+                return false;
+            }
+
+            o2 = r.getField(operand2).getValue();
+        }
+
+        boolean ret = false;
+
+        switch (operator) {
+            case LESS_THAN:
+                ret = o1.compareTo(o2) < 0;
+                break;
+
+            case LESS_THAN_OR_EQUAL_TO:
+                ret = o1.compareTo(o2) <= 0;
+                break;
+
+            case GREATER_THAN:
+                ret = o1.compareTo(o2) > 0;
+                break;
+
+            case GREATER_THAN_OR_EQUAL_TO:
+                ret = o1.compareTo(o2) >= 0;
+                break;
+
+            case EQUAL_TO:
+                ret = o1.compareTo(o2) == 0;
+                break;
+
+            case NOT_EQUAL_TO:
+                ret = o1.compareTo(o2) != 0;
+                break;
+        }
+
+        if (getNext() == null)
+            return ret;
+        else if (logicalOperator == LogicalOperator.AND)
+            return ret && getNext().evaluate(r);
+        else if (logicalOperator == LogicalOperator.OR)
+            return ret || getNext().evaluate(r);
+
+        return true;
     }
 
 }
